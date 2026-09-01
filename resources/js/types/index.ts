@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-vue-next';
 
 export interface Auth {
-    user: User;
+    user: Admin;
 }
 
 export interface BreadcrumbItem {
@@ -31,8 +31,8 @@ export interface SharedData {
 
 export interface User {
     id: number;
-    name: string;
-    email: string;
+    nombreAdmin: string;
+    correoAdmin: string;
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;
