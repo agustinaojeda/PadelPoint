@@ -17,6 +17,7 @@ return new class extends Migration
             $table->dateTime('horaInicioTurno');
             $table->dateTime('horaFinTurno');
             $table->boolean('estaLibreTurno');
+            
             $table->foreignId('cancha_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
