@@ -15,14 +15,14 @@ defineProps<{
 }>();
 
 const form = useForm({
-    email: '',
-    password: '',
+    correoAdmin: '',
+    contrasenaAdmin: '',
     remember: false,
 });
 
 const submit = () => {
     form.post(route('login'), {
-        onFinish: () => form.reset('password'),
+        onFinish: () => form.reset('contrasenaAdmin'),
     });
 };
 </script>
@@ -38,35 +38,35 @@ const submit = () => {
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="email">Email address</Label>
+                    <Label for="correoAdmin">Email address</Label>
                     <Input
-                        id="email"
+                        id="correoAdmin"
                         type="email"
                         required
                         autofocus
                         tabindex="1"
                         autocomplete="email"
-                        v-model="form.email"
+                        v-model="form.correoAdmin"
                         placeholder="email@example.com"
                     />
-                    <InputError :message="form.errors.email" />
+                    <InputError :message="form.errors.correoAdmin" />
                 </div>
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
-                        <Label for="password">Password</Label>
+                        <Label for="contrasenaAdmin">Password</Label>
                         <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" tabindex="5"> Forgot password? </TextLink>
                     </div>
                     <Input
-                        id="password"
+                        id="contrasenaAdmin"
                         type="password"
                         required
                         tabindex="2"
                         autocomplete="current-password"
-                        v-model="form.password"
+                        v-model="form.contrasenaAdmin"
                         placeholder="Password"
                     />
-                    <InputError :message="form.errors.password" />
+                    <InputError :message="form.errors.contrasenaAdmin" />
                 </div>
 
                 <div class="flex items-center justify-between" tabindex="3">
