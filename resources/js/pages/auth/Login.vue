@@ -38,7 +38,7 @@ const submit = () => {
         <form @submit.prevent="submit" class="flex flex-col gap-6">
             <div class="grid gap-6">
                 <div class="grid gap-2">
-                    <Label for="correoAdmin">Email address</Label>
+                    <Label for="correoAdmin">Correo electrónico</Label>
                     <Input
                         id="correoAdmin"
                         type="email"
@@ -54,8 +54,8 @@ const submit = () => {
 
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
-                        <Label for="contrasenaAdmin">Password</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" tabindex="5"> Forgot password? </TextLink>
+                        <Label for="contrasenaAdmin">Contraseña</Label>
+                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" tabindex="5"> ¿Olvidaste la contraseña? </TextLink>
                     </div>
                     <Input
                         id="contrasenaAdmin"
@@ -64,7 +64,7 @@ const submit = () => {
                         tabindex="2"
                         autocomplete="current-password"
                         v-model="form.contrasenaAdmin"
-                        placeholder="Password"
+                        placeholder="Contraseña"
                     />
                     <InputError :message="form.errors.contrasenaAdmin" />
                 </div>
@@ -72,7 +72,7 @@ const submit = () => {
                 <div class="flex items-center justify-between" tabindex="3">
                     <Label for="remember" class="flex items-center space-x-3">
                         <Checkbox id="remember" v-model:checked="form.remember" tabindex="4" />
-                        <span>Remember me</span>
+                        <span>Recordarme</span>
                     </Label>
                 </div>
 

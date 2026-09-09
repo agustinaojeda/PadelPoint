@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admins', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombreAdmin', 120);
-            $table->string('correoAdmin')->unique();
-            $table->string('contrasenaAdmin');
-            $table->timestamps();
+        Schema::table('canchas', function (Blueprint $table) {
+            $table->timestamp('fechaDesactivacion')->nullable()->after('estaActiva');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin');
+        Schema::table('canchas', function (Blueprint $table) {
+            $table->dropColumn('fechaDesactivacion');
+        });
     }
 };

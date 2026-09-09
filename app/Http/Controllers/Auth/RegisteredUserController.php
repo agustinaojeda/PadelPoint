@@ -30,7 +30,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'nombreAdmin' => ['required', 'string', 'max:255', 'unique:admins,nombreAdmin'],
+            'nombreAdmin' => ['required', 'string', 'max:120'],
             'correoAdmin' => ['required', 'string', 'email', 'max:255', 'unique:admins,correoAdmin'],
             'contrasenaAdmin' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
