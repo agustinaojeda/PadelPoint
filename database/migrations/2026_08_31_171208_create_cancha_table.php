@@ -10,22 +10,33 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('canchas', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombreCancha')->unique;
-            $table->boolean('esTechada');
-            $table->boolean('estaActiva');
-            $table->float('precio');
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('canchas', function (Blueprint $table) {
+        $table->id();
+        
+        $table->string('nombre')->unique();
+        $table->string('superficie')->nullable(); 
+        $table->boolean('es_techada')->default(false);
+        $table->boolean('esta_disponible')->default(true);
+        $table->decimal('precio', 10, 2); 
+        $table->string('imagen_url')->nullable();
+        $table->text('descripcion')->nullable();
+        
+        //turnos
+        $table->integer('duracion_turno'); // en minutos
+        $table->integer('cantidad_jugadores')->default(4); 
+        $table->time('hora_apertura'); 
+        $table->time('hora_cierre');  
+        $table->json('dias_disponibles'); // del 0 al 6, 0 es domingo y 6 es sábado
 
+        $table->timestamps();
+    });
+}
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('cancha');
+        Schema::dropIfExists('canchas');
     }
 };

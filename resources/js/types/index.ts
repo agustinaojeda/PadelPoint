@@ -40,3 +40,12 @@ export interface User {
 }
 
 export type BreadcrumbItemType = BreadcrumbItem;
+
+export interface Cancha{
+    id: number;
+    nombreCancha: string;
+    esTechada: boolean;
+    precio: number;
+    estaActiva: boolean;
+    fechaDesactivacion: string | null;
+}

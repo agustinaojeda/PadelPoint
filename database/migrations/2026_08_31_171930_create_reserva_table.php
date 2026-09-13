@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('reservas', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('fechaEmisionReserva');
-            $table->boolean('estaActivaReserva');
-            $table->float('montoTotal');
+            $table->foreignId('cancha_id')->constrained('canchas')->onDelete('cascade');
 
-            $table->string('nombreCliente');
-            $table->string('emailCliente');
-            $table->integer('telefonoCliente');
+            $table->date('fecha_turno'); 
+            $table->time('hora_inicio');  
+            $table->time('hora_fin');   
 
-            $table->foreignId('turno_id')->constrained()->onDelete('cascade');
+            $table->string('nombre_cliente');
+            $table->string('telefono_cliente');
+            $table->decimal('monto_total', 10, 2); 
+            $table->string('estado')->default('confirmada');
+
             $table->timestamps();
         });
     }
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reserva');
+        Schema::dropIfExists('reservas');
     }
 };

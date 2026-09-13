@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nombreAdmin', 120);
             $table->string('correoAdmin')->unique();
             $table->string('contrasenaAdmin');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('admin');
+        Schema::dropIfExists('admins');
     }
 };

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Models\Cancha;
 
 class CanchaController extends Controller
 {
@@ -11,7 +13,11 @@ class CanchaController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('canchas/index',[
+            'canchas' => Cancha::select('id', 'nombreCancha', 'esTechada', 'precio')
+                ->where('estaActiva', true)
+                ->paginate(10),
+        ]);
     }
 
     /**
