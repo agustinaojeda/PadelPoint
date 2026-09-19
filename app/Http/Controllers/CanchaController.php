@@ -46,7 +46,7 @@ class CanchaController extends Controller
             $path = $request->file('imagen')->store('canchas', 'public'); //le da un nombre unico
             $validated['imagen_url'] = 'storage/' . $path;
         } else {
-            $validated['imagen_url'] = 'images/cancha-default.jpg';
+            $validated['imagen_url'] = 'images/cancha-default.webp';
         }
 
         unset($validated['imagen']);
