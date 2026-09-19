@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Cancha;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class PurgeDesactivadasCanchas extends Command
 {
@@ -26,12 +27,32 @@ class PurgeDesactivadasCanchas extends Command
      */
     public function handle(): int
     {
-        $afectadas = Cancha::where('esta_disponible', false)
+        $canchasAEliminar = Cancha::where('esta_disponible', false)
             ->whereNotNull('desactivada_en')
             ->where('desactivada_en', '<=', now()->subDays(30))
-            ->delete(); // Elimina físicamente la fila de la BD
+            ->get();
 
-        $this->info("Se eliminaron definitivamente {$afectadas} canchas.");
+        if ($canchasAEliminar->isEmpty()) {
+            $this->info("No hay canchas para eliminar.");
+            return Command::SUCCESS;
+        }
+
+        $contador = 0;
+
+        foreach ($canchasAEliminar as $cancha) { //primero borra la imagen de la cancha si es que tiene y despues la cancha de la bd
+            if ($cancha->imagen_url && $cancha->imagen_url !== 'images/cancha-default.jpg') {
+                $path = str_replace('storage/', '', $cancha->imagen_url);
+
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+
+            $cancha->delete();
+            $contador++;
+        }
+
+        $this->info("Se eliminaron definitivamente {$contador} canchas con sus respectivas imágenes.");
 
         return Command::SUCCESS;
     }

@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CanchaController;
 
 require __DIR__ . '/settings.php';
@@ -14,9 +13,9 @@ Route::get('/', function () {
 
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
-})->middleware(['auth:admin'])->name('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-Route::middleware(['auth:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('canchas', [CanchaController::class, 'index'])->name('canchas.index');
     Route::post('canchas/crear', [CanchaController::class, 'create'])->name('canchas.create');
     Route::post('canchas', [CanchaController::class, 'store'])->name('canchas.store');

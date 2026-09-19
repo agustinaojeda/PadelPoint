@@ -29,35 +29,16 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $admin = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        $admin->fill([
+            'nombreAdmin' => $request->validated('name'),
+            'correoAdmin' => $request->validated('email'),
+        ]);
 
-        $request->user()->save();
+        $admin->save();
 
         return to_route('profile.edit');
     }
 
-    /**
-     * Delete the user's profile.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/');
-    }
 }

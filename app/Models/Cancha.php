@@ -25,6 +25,7 @@ class Cancha extends Model
         'hora_apertura',
         'hora_cierre',
         'dias_disponibles',
+        'desactivada_en',
     ];
 
     protected $casts = [

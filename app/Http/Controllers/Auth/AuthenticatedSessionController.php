@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
             'contrasenaAdmin' => ['required', 'string'],
         ]);
 
-        if (! Auth::guard('admin')->attempt([
+        if (! Auth::attempt([
             'correoAdmin' => $credentials['correoAdmin'],
             'password' => $credentials['contrasenaAdmin'],
         ], $request->boolean('remember'))) {
@@ -54,7 +54,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('admin')->logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -28,8 +28,8 @@ const submit = () => {
 </script>
 
 <template>
-    <AuthBase title="Log in to your account" description="Enter your email and password below to log in">
-        <Head title="Log in" />
+    <AuthBase title="Iniciar sesión" description="Completa los campos debajo para iniciar sesión.">
+        <Head title="Iniciar sesión" />
 
         <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
             {{ status }}
@@ -47,7 +47,7 @@ const submit = () => {
                         tabindex="1"
                         autocomplete="email"
                         v-model="form.correoAdmin"
-                        placeholder="email@example.com"
+                        placeholder="correo@ejemplo.com"
                     />
                     <InputError :message="form.errors.correoAdmin" />
                 </div>
@@ -78,14 +78,10 @@ const submit = () => {
 
                 <Button type="submit" class="mt-4 w-full" tabindex="4" :disabled="form.processing">
                     <LoaderCircle v-if="form.processing" class="h-4 w-4 animate-spin" />
-                    Log in
+                    Ingresar
                 </Button>
             </div>
 
-            <div class="text-center text-sm text-muted-foreground">
-                Don't have an account?
-                <TextLink :href="route('register')" :tabindex="5">Sign up</TextLink>
-            </div>
         </form>
     </AuthBase>
 </template>

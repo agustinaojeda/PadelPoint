@@ -32,9 +32,9 @@ class PasswordResetLinkController extends Controller
             'email' => 'required|email',
         ]);
 
-        Password::sendResetLink(
-            $request->only('email')
-        );
+        $status = Password::broker('admins')->sendResetLink([
+            'correoAdmin' => $request->email,
+        ]);
 
         return back()->with('status', __('A reset link will be sent if the account exists.'));
     }
