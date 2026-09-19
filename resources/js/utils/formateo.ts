@@ -52,3 +52,39 @@ export const diasSemana = [
     { id: 6, label: 'Sáb' },
     { id: 0, label: 'Dom' },
 ]
+
+const obtenerLabelDia = (id: number): string => {
+    return diasSemana.find((d) => d.id === id)?.label ?? '';
+};
+
+export const formatearDias = (dias: number[] | string | undefined | null): string => {
+    if (!dias) return 'Sin días asignados';
+
+    let listaDias: number[] = [];
+    if (typeof dias === 'string') {
+        try {
+            listaDias = JSON.parse(dias);
+        } catch {
+            return dias;
+        }
+    } else if (Array.isArray(dias)) {
+        listaDias = dias;
+    }
+
+    if (listaDias.length === 0) return 'Sin días asignados';
+    if (listaDias.length === 7) return 'Todos los días';
+
+    const ordenados = [...listaDias].sort((a, b) => a - b);
+
+    const esConsecutivo =
+        ordenados.length > 2 &&
+        ordenados.every((val, index) => index === 0 || val === ordenados[index - 1] + 1);
+
+    if (esConsecutivo) {
+        const primero = obtenerLabelDia(ordenados[0]);
+        const ultimo = obtenerLabelDia(ordenados[ordenados.length - 1]);
+        return `${primero} a ${ultimo}`;
+    }
+
+    return ordenados.map((id) => obtenerLabelDia(id)).filter(Boolean).join(', ');
+};

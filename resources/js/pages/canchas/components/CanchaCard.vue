@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Cancha } from '@/types';
-import { formatDuracion, formatPrecio } from '@/utils/formateo';
+import { formatDuracion, formatPrecio, formatearDias} from '@/utils/formateo';
 
 const props = defineProps<{
     cancha: Cancha;
@@ -14,6 +14,7 @@ defineEmits<{
     (e: 'delete', id: number): void;
     (e: 'activar', cancha: Cancha): void;
 }>();
+
 
 </script>
 
@@ -53,6 +54,9 @@ defineEmits<{
                 <div class="border-t pt-2 text-xs text-muted-foreground">
                     Horario: {{ cancha.hora_apertura.substring(0, 5) }} a {{ cancha.hora_cierre.substring(0, 5) }} hs
                 </div>
+                <div class="text-xs text-muted-foreground">Días: 
+                        {{ formatearDias(cancha.dias_disponibles) }}
+                    </div>
             </CardContent>
         </div>
 
