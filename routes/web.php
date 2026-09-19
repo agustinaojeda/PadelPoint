@@ -24,4 +24,5 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('canchas/{cancha}/editar', [CanchaController::class, 'edit'])->name('canchas.edit');
     Route::put('canchas/{cancha}', [CanchaController::class, 'update'])->name('canchas.update');
     Route::delete('canchas/{cancha}', [CanchaController::class, 'destroy'])->name('canchas.destroy');
+    Route::patch('canchas/{cancha}/activar', [CanchaController::class, 'activar'])->name('canchas.activar');
 });

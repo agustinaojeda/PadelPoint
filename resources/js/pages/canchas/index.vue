@@ -1,230 +1,113 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Cancha, SharedData } from '@/types';
-import type { PageProps } from '@inertiajs/core';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import {
-    columnFilteringFeature,
-    columnVisibilityFeature,
-    createColumnHelper,
-    createExpandedRowModel,
-    createFilteredRowModel,
-    createPaginatedRowModel,
-    createSortedRowModel,
-    filterFn_includesString,
-    FlexRender,
-    rowExpandingFeature,
-    rowPaginationFeature,
-    rowSortingFeature,
-    sortFn_alphanumeric,
-    sortFn_text,
-    tableFeatures,
-    useTable,
-} from '@tanstack/vue-table';
-import { createReusableTemplate } from '@vueuse/core';
-import { ArrowUpDown, CirclePlus, MoreHorizontal, Pencil, Trash } from 'lucide-vue-next';
-import { computed, h } from 'vue';
+import { ref } from 'vue'
+import { router, Head } from '@inertiajs/vue3'
+import AppLayout from '@/layouts/AppLayout.vue'
+import type { BreadcrumbItem, Cancha } from '@/types'
+import { Button } from '@/components/ui/button'
 
-interface CanchaPageProps extends SharedData, PageProps {
-    canchas: Cancha[] | { data: Cancha[] };
+import CanchaCard from './components/CanchaCard.vue'
+import CanchaFormModal from './components/CanchaFormModal.vue'
+
+import { useScrollInfinito } from '@/composables/useScrollInfinito'
+import { useFeedback } from '@/composables/useFeedback'
+
+interface CanchasPaginadas {
+    data: Cancha[];
+    current_page: number;
+    next_page_url: string | null;
 }
 
-const page = usePage<CanchaPageProps>();
-
-const canchasList = computed<Cancha[]>(() => {
-    const rawData = page.props.canchas;
-    if (Array.isArray(rawData)) return rawData;
-    return rawData?.data ?? [];
-});
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Canchas',
-        href: '/canchas',
-    },
-];
-
-const [DefineTemplate, ReuseTemplate] = createReusableTemplate<{
-    cancha: Cancha;
-    onExpand: () => void;
+const props = defineProps<{
+    canchas: CanchasPaginadas;
 }>();
 
-const features = tableFeatures({
-    columnFilteringFeature,
-    columnVisibilityFeature,
-    rowExpandingFeature,
-    rowPaginationFeature,
-    rowSortingFeature,
-    expandedRowModel: createExpandedRowModel(),
-    filteredRowModel: createFilteredRowModel(),
-    paginatedRowModel: createPaginatedRowModel(),
-    sortedRowModel: createSortedRowModel(),
-    filterFns: { includesString: filterFn_includesString },
-    sortFns: { alphanumeric: sortFn_alphanumeric, text: sortFn_text },
-});
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Canchas', href: '/canchas' },
+];
 
-const columnHelper = createColumnHelper<typeof features, Cancha>();
+useFeedback()
+const { items: listaCanchas, cargando, triggerScroll } = useScrollInfinito(
+    () => props.canchas,
+    'canchas'
+)
 
-const columns = columnHelper.columns([
-    columnHelper.accessor('nombreCancha', {
-        id: 'nombreCancha',
-        header: ({ column }) => {
-            return h(
-                Button,
-                {
-                    variant: 'ghost',
-                    onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-                },
-                () => ['Nombre', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
-            );
-        },
-        cell: ({ row }) => h('div', { class: 'font-medium whitespace-nowrap' }, row.getValue('nombreCancha')),
-    }),
-    columnHelper.accessor('esTechada', {
-        id: 'esTechada',
-        header: 'Techada',
-        cell: ({ row }) => {
-            const isTechada = row.getValue('esTechada');
-            return h('div', { class: 'text-center' }, isTechada ? 'Sí' : 'No');
-        },
-    }),
-    columnHelper.accessor('precio', {
-        id: 'precio',
-        header: ({ column }) => {
-            return h('div', { class: 'text-right' }, [
-                h(
-                    Button,
-                    {
-                        variant: 'ghost',
-                        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-                    },
-                    () => ['Precio', h(ArrowUpDown, { class: 'ml-2 h-4 w-4' })],
-                ),
-            ]);
-        },
-        cell: ({ row }) => {
-            const amount = Number.parseFloat(row.getValue('precio'));
-            const formatted = new Intl.NumberFormat('es-AR', {
-                style: 'currency',
-                currency: 'ARS',
-            }).format(amount);
+// Gestión de Modales y Acciones
+const showModal = ref(false)
+const canchaSeleccionada = ref<Cancha | null>(null)
 
-            return h('div', { class: 'text-right font-medium whitespace-nowrap' }, formatted);
-        },
-    }),
-    columnHelper.display({
-        id: 'actions',
-        enableHiding: false,
-        cell: ({ row }) => {
-            const cancha = row.original;
-            return h(ReuseTemplate, {
-                cancha,
-                onExpand: () => row.toggleExpanded(),
-            });
-        },
-    }),
-]);
+const abrirCrearModal = () => {
+    canchaSeleccionada.value = null
+    showModal.value = true
+}
 
-const table = useTable({
-    features,
-    data: canchasList,
-    columns,
-});
+const abrirEditarModal = (cancha: Cancha) => {
+    canchaSeleccionada.value = { ...cancha }
+    showModal.value = true
+}
+
+const cerrarModal = () => {
+    showModal.value = false
+    canchaSeleccionada.value = null 
+}
+
+const desactivarCancha = (id: number) => {
+    if (confirm(`¿Seguro que deseas desactivar esta cancha?\nSe eliminará completamente luego de 30 días.`)) {
+        router.delete(`/canchas/${id}`, { preserveScroll: true })
+    }
+}
+
+const activarCancha = (cancha: Cancha) => {
+    router.patch(`/canchas/${cancha.id}/activar`, {}, { preserveScroll: true })
+}
 </script>
 
 <template>
-    <DefineTemplate v-slot="{ cancha }">
-        <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-                <Button variant="ghost" class="h-8 w-8 p-0">
-                    <span class="sr-only">Abrir menú</span>
-                    <MoreHorizontal class="h-4 w-4" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                <DropdownMenuItem as-child>
-                    <Link :href="route('canchas.edit', { cancha: cancha.id })" class="flex w-full cursor-pointer items-center">
-                        <Pencil class="mr-2 h-4 w-4" /> Editar
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem class="cursor-pointer text-red-600 focus:text-red-600">
-                    <Trash class="mr-2 h-4 w-4" /> Eliminar
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    </DefineTemplate>
-
     <Head title="Canchas" />
-
     <AppLayout :breadcrumbs="breadcrumbs">
-        <!-- Wrapper principal con ancho máximo y ocultamiento estricto de desbordamiento exterior -->
-        <div class="w-full max-w-full overflow-hidden p-4 sm:p-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4">
-                <Input
-                    class="w-full sm:max-w-sm"
-                    placeholder="Filtrar por nombre..."
-                    :model-value="table.getColumn('nombreCancha')?.getFilterValue() as string"
-                    @update:model-value="table.getColumn('nombreCancha')?.setFilterValue($event)"
-                />
-                <Button as-child size="sm" class="w-full sm:w-auto bg-green-600 text-white hover:bg-green-700">
-                    <Link :href="route('canchas.create')">
-                        <CirclePlus class="mr-2 h-4 w-4" /> Nueva Cancha
-                    </Link>
-                </Button>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestión de Canchas</h1>
+                    <p class="text-muted-foreground mt-1">Administra las instalaciones del complejo.</p>
+                </div>
+                <Button @click="abrirCrearModal">+ Nueva Cancha</Button>
             </div>
 
-            <!-- Caja contenedora con ancho estricto calculando padding mobile (100vw - 2rem) -->
-            <div class="w-[calc(100vw-2rem)] sm:w-full overflow-x-auto rounded-md border">
-                <!-- Se asigna un min-width a la tabla para forzar el scroll interno en pantallas chicas -->
-                <Table class="min-w-[500px] w-full">
-                    <TableHeader>
-                        <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-                            <TableHead v-for="header in headerGroup.headers" :key="header.id">
-                                <FlexRender v-if="!header.isPlaceholder" :header="header" />
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        <template v-if="table.getRowModel().rows?.length">
-                            <template v-for="row in table.getRowModel().rows" :key="row.id">
-                                <TableRow>
-                                    <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                        <FlexRender :cell="cell" />
-                                    </TableCell>
-                                </TableRow>
-                            </template>
-                        </template>
+            <template v-if="listaCanchas.length > 0">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <CanchaCard
+                        v-for="cancha in listaCanchas"
+                        :key="cancha.id"
+                        :cancha="cancha"
+                        @edit="abrirEditarModal"
+                        @delete="desactivarCancha"
+                        @activar="activarCancha"
+                    />
+                </div>
 
-                        <TableRow v-else>
-                            <TableCell :colspan="columns.length" class="h-24 text-center">
-                                No se encontraron canchas.
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-                </Table>
-            </div>
+                <div ref="triggerScroll" class="py-8 text-center">
+                    <div v-if="cargando" class="text-sm text-muted-foreground flex items-center justify-center gap-2">
+                        <span class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></span>
+                        Cargando más canchas...
+                    </div>
+                    <p v-else-if="!canchas.next_page_url" class="text-sm text-muted-foreground">
+                        No hay más canchas para mostrar.
+                    </p>
+                </div>
+            </template>
 
-            <div class="flex items-center justify-end space-x-2 py-4">
-                <Button variant="outline" size="sm" :disabled="!table.getCanPreviousPage()" @click="table.previousPage()">
-                    Anterior
-                </Button>
-                <Button variant="outline" size="sm" :disabled="!table.getCanNextPage()" @click="table.nextPage()">
-                    Siguiente
+            <div v-else class="text-center py-16 bg-muted/20 rounded-xl border border-dashed">
+                <p class="text-muted-foreground">No hay canchas activas actualmente.</p>
+                <Button variant="outline" class="mt-4" @click="abrirCrearModal">
+                    Crear primera cancha
                 </Button>
             </div>
         </div>
+
+        <CanchaFormModal
+            :open="showModal"
+            :cancha="canchaSeleccionada"
+            @close="cerrarModal"
+        />
     </AppLayout>
 </template>
