@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('nombre_cliente');
             $table->string('telefono_cliente');
             $table->decimal('monto_total', 10, 2); 
-            $table->string('estado')->default('confirmada');
+            $table->enum('estado', ['pendiente', 'confirmada', 'cancelada', 'completada'])->default('confirmada');
+            $table->text('observaciones')->nullable();
 
             $table->timestamps();
         });
