@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import type { Cancha } from '@/types';
 import { formatDuracion, formatPrecio, formatearDias} from '@/utils/formateo';
 
-const props = defineProps<{
+defineProps<{
     cancha: Cancha;
 }>();
 
