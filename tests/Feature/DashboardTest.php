@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Models\Admin;
 
 test('guests are redirected to the login page', function () {
     $response = $this->get('/dashboard');
@@ -8,9 +8,9 @@ test('guests are redirected to the login page', function () {
 });
 
 test('authenticated users can visit the dashboard', function () {
-    $user = User::factory()->create();
-    $this->actingAs($user);
+    /** @var Admin $user */
+    $user = Admin::factory()->create();
 
-    $response = $this->get('/dashboard');
+    $response = $this->actingAs($user)->get('/dashboard');
     $response->assertStatus(200);
 });
