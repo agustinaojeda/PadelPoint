@@ -1,7 +1,7 @@
-import type { LucideIcon } from 'lucide-vue-next';
+import type { Component } from 'vue';
 
 export interface Auth {
-    user: Admin;
+    user: User | null;
 }
 
 export interface BreadcrumbItem {
@@ -12,11 +12,11 @@ export interface BreadcrumbItem {
 export interface NavItem {
     title: string;
     href: string;
-    icon?: LucideIcon;
+    icon?: Component;
     isActive?: boolean;
 }
 
-export interface SharedData {
+export interface SharedData extends Record<string, unknown> {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
@@ -31,6 +31,7 @@ export interface SharedData {
 
 export interface User {
     id: number;
+    name?: string;
     nombreAdmin: string;
     correoAdmin: string;
     avatar?: string;
@@ -41,6 +42,7 @@ export interface User {
 
 export type BreadcrumbItemType = BreadcrumbItem;
 
+//canchas
 export interface Cancha{
     id: number;
     nombre: string;
@@ -72,4 +74,41 @@ export interface FormCanchaData {
     dias_disponibles: number[]
     imagen: File | null
     _method?: string
+}
+
+//reservas
+export type EstadoReserva = 'pendiente' | 'confirmada' | 'cancelada' | 'completada';
+
+export interface Reserva {
+    id: number;
+    cancha_id: number;
+    fecha_turno: string;
+    hora_inicio: string;
+    hora_fin: string;
+    nombre_cliente: string;
+    telefono_cliente: string;
+    monto_total: number;
+    estado: EstadoReserva;
+    observaciones: string | null;
+    created_at?: string;
+    updated_at?: string;
+    cancha?: Cancha;
+}
+
+export interface FormReservaData {
+    cancha_id: number | null;
+    fecha_turno: string;
+    hora_inicio: string;
+    hora_fin: string;
+    nombre_cliente: string;
+    telefono_cliente: string;
+    monto_total: number;
+    observaciones?: string;
+}
+
+export interface SlotTurno {
+    hora_inicio: string;
+    hora_fin: string;
+    disponible: boolean;
+    reserva?: Reserva;
 }

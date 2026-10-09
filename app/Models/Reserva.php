@@ -21,6 +21,7 @@ class Reserva extends Model
         'telefono_cliente',
         'monto_total',
         'estado',
+        'observaciones',
     ];
 
     protected $casts = [

@@ -41,4 +41,25 @@ class ProfileController extends Controller
         return to_route('profile.edit');
     }
 
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $admin = $request->user();
+
+        Auth::guard('web')->logout();
+
+        $admin->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
+
 }

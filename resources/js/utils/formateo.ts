@@ -88,3 +88,9 @@ export const formatearDias = (dias: number[] | string | undefined | null): strin
 
     return ordenados.map((id) => obtenerLabelDia(id)).filter(Boolean).join(', ');
 };
+
+export const formatearFecha = (fechaStr: string) => {
+    if (!fechaStr) return '';
+    const [anio, mes, dia] = fechaStr.split('-');
+    return `${dia}/${mes}/${anio}`;
+};

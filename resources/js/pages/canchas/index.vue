@@ -6,8 +6,8 @@ import type { BreadcrumbItem, Cancha } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
-import CanchaCard from './components/CanchaCard.vue';
-import CanchaFormModal from './components/CanchaFormModal.vue';
+import CanchaCard from '../../components/canchas/CanchaCard.vue';
+import CanchaFormModal from '../../components/canchas/CanchaFormModal.vue';
 
 import { useFeedback } from '@/composables/useFeedback';
 import { useScrollInfinito } from '@/composables/useScrollInfinito';
@@ -22,7 +22,10 @@ const props = defineProps<{
     canchas: CanchasPaginadas;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Canchas', href: '/canchas' }];
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: '/dashboard' },
+    { title: 'Canchas', href: '/canchas' },
+];
 
 useFeedback();
 const { items: listaCanchas, cargando, triggerScroll } = useScrollInfinito(() => props.canchas, 'canchas');

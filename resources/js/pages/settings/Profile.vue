@@ -30,8 +30,8 @@ const page = usePage<SharedData>();
 const user = page.props.auth.user as User;
 
 const form = useForm({
-    name: user.name,
-    email: user.email,
+    name: user.nombreAdmin,
+    email: user.correoAdmin,
 });
 
 const submit = () => {

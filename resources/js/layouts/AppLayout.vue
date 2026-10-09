@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import type { BreadcrumbItemType } from '@/types';
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css';
+import { Info } from 'lucide-vue-next';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
