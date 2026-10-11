@@ -22,19 +22,13 @@ defineEmits<{
                 <CardTitle class="text-lg font-semibold">{{ cancha.nombre }}</CardTitle>
                 <Badge variant="outline">{{ cancha.es_techada ? 'Techada' : 'Descubierta' }}</Badge>
             </div>
-            <p class="text-xs text-muted-foreground">
-                Turnos de {{ cancha.duracion_turno }} min | ${{ cancha.precio.toLocaleString('es-AR') }}
-            </p>
+            <p class="text-xs text-muted-foreground">Turnos de {{ cancha.duracion_turno }} min | ${{ cancha.precio.toLocaleString('es-AR') }}</p>
         </CardHeader>
 
         <CardContent class="flex-1 space-y-2 pt-4">
-            <SlotItem
-                v-for="slot in slots"
-                :key="slot.hora_inicio"
-                :slot="slot"
-                @reservar="$emit('reservarSlot', $event)"
-                @ver-detalle="$emit('verDetalleReserva', $event)"
-            />
+            <template v-for="slot in slots" :key="slot.hora_inicio">
+                <SlotItem :slot="slot" @reservar="$emit('reservarSlot', $event)" @ver-detalle="$emit('verDetalleReserva', $event)" />
+            </template>
         </CardContent>
     </Card>
 </template>

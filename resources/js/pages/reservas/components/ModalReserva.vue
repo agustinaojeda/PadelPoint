@@ -10,7 +10,7 @@ import { watch } from 'vue';
 const props = defineProps<{
     open: boolean;
     cancha: Cancha | null;
-    slot: SlotTurno | null;
+    turnoSlot: SlotTurno | null;
     fecha: string;
 }>();
 
@@ -31,13 +31,13 @@ const form = useForm<FormReservaData>({
 });
 
 watch(
-    () => [props.cancha, props.slot, props.fecha],
+    () => [props.cancha, props.turnoSlot, props.fecha],
     () => {
-        if (props.cancha && props.slot) {
+        if (props.cancha && props.turnoSlot) {
             form.cancha_id = props.cancha.id;
             form.fecha_turno = props.fecha;
-            form.hora_inicio = props.slot.hora_inicio;
-            form.hora_fin = props.slot.hora_fin;
+            form.hora_inicio = props.turnoSlot.hora_inicio;
+            form.hora_fin = props.turnoSlot.hora_fin;
             form.monto_total = props.cancha.precio;
             form.clearErrors();
         }
@@ -70,7 +70,7 @@ const cerrarModal = () => {
         maxWidth="max-w-md"
         @close="cerrarModal"
     >
-        <div v-if="cancha && slot" class="mb-4 space-y-2 rounded-lg border bg-muted/40 p-3 text-sm">
+        <div v-if="cancha && turnoSlot" class="mb-4 space-y-2 rounded-lg border bg-muted/40 p-3 text-sm">
             <div class="flex items-center justify-between">
                 <span class="font-semibold text-foreground">{{ cancha.nombre }}</span>
                 <Badge variant="outline">{{ cancha.es_techada ? 'Techada' : 'Descubierta' }}</Badge>
@@ -82,7 +82,7 @@ const cerrarModal = () => {
                 </div>
                 <div class="flex items-center gap-1">
                     <Clock class="h-3.5 w-3.5" />
-                    <span>{{ slot.hora_inicio }} - {{ slot.hora_fin }} hs</span>
+                    <span>{{ turnoSlot.hora_inicio }} - {{ turnoSlot.hora_fin }} hs</span>
                 </div>
             </div>
         </div>

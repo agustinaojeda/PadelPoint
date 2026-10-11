@@ -118,7 +118,7 @@ const cerrarModal = () => {
     <ModalReserva
         v-model:open="modalAbierto"
         :cancha="turnoSeleccionado?.cancha ?? null"
-        :slot="turnoSeleccionado?.slot ?? null"
+        :turno-slot="turnoSeleccionado?.slot ?? null"
         :fecha="fecha"
         @close="cerrarModal"
     />
