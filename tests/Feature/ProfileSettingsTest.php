@@ -3,6 +3,7 @@
 use App\Models\Admin;
 
 test('authenticated users can update their profile settings', function () {
+    /** @var Admin $user */
     $user = Admin::factory()->create();
 
     $response = $this->actingAs($user)->patch('/settings/profile', [
@@ -19,6 +20,7 @@ test('authenticated users can update their profile settings', function () {
 });
 
 test('authenticated users can delete their account', function () {
+    /** @var Admin $user */
     $user = Admin::factory()->create();
 
     $response = $this->actingAs($user)->delete('/settings/profile', [

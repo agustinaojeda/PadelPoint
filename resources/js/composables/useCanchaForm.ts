@@ -1,7 +1,6 @@
-// src/composables/useCanchaForm.ts
 import { ref, watch } from 'vue'
 import { useForm } from '@inertiajs/vue3'
-import type { Cancha , FormCanchaData} from '@/types'
+import type { Cancha, FormCanchaData } from '@/types'
 import { formatDiasDisponibles } from '@/utils/formateo'
 
 const formDefaults: FormCanchaData = {
@@ -36,8 +35,8 @@ export function useCanchaForm(
     }
 
     const clearSelectedImage = () => {
-        form.imagen = null
-        imagePreview.value = props.cancha?.imagen_url ?? null
+        form.imagen = null;
+        imagePreview.value = props.cancha?.imagen_url ?? null;
     }
 
     const sincronizarFormulario = () => {
@@ -59,6 +58,7 @@ export function useCanchaForm(
             form.hora_cierre = props.cancha.hora_cierre
                 ? String(props.cancha.hora_cierre).substring(0, 5)
                 : '23:00'
+            
             form.dias_disponibles = formatDiasDisponibles(props.cancha.dias_disponibles)
             form.imagen = null
             delete form._method
@@ -80,16 +80,32 @@ export function useCanchaForm(
     )
 
     const submit = () => {
+        const payloadDias = form.dias_disponibles.map((dia) => Number(dia))
+
         if (props.cancha) {
+            if (form.imagen instanceof File) {
+                form.transform((data) => ({
+                    ...data,
+                    dias_disponibles: payloadDias,
+                    _method: 'PUT',
+                })).post(`/canchas/${props.cancha.id}`, {
+                    preserveScroll: true,
+                    onSuccess: () => emit('close'),
+                })
+            } else {
+                form.transform((data) => ({
+                    ...data,
+                    dias_disponibles: payloadDias,
+                })).put(`/canchas/${props.cancha.id}`, {
+                    preserveScroll: true,
+                    onSuccess: () => emit('close'),
+                })
+            }
+        } else {
             form.transform((data) => ({
                 ...data,
-                _method: 'put',
-            })).post(`/canchas/${props.cancha.id}`, {
-                preserveScroll: true,
-                onSuccess: () => emit('close'),
-            })
-        } else {
-            form.post('/canchas', {
+                dias_disponibles: payloadDias,
+            })).post(`/canchas`, {
                 preserveScroll: true,
                 onSuccess: () => emit('close'),
             })

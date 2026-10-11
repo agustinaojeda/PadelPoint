@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Cancha extends Model
 {
@@ -43,15 +45,34 @@ class Cancha extends Model
         return $this->hasMany(Reserva::class);
     }
 
-    protected $appends = ['imagen_url'];
-
-    public function getImagenUrlAttribute(): string
+    /**
+     * retorna siempre una URL completa y accesible para la imagen
+     */
+    protected function imagenUrl(): Attribute
     {
-        if ($this->attributes['imagen_url'] ?? false) {
-            return asset($this->attributes['imagen_url']);
-        }
+        return Attribute::make(
+            get: function ($value) {
+                if ($value && Storage::disk('public')->exists(str_replace('storage/', '', $value))) {
+                    return asset($value);
+                }
 
-        // si no tiene foto, se carga la default
-        return asset('images/cancha-default.webp');
+                return asset('images/cancha-default.webp');
+            }
+        );
+    }
+
+    /**
+     * helper para eliminar la imagen fisica del disco si no es la por defecto
+     */
+    public function eliminarImagenFisica(): void
+    {
+        $rawPath = $this->attributes['imagen_url'] ?? null;
+
+        if ($rawPath && !str_contains($rawPath, 'cancha-default')) {
+            $relativePath = str_replace('storage/', '', $rawPath);
+            if (Storage::disk('public')->exists($relativePath)) {
+                Storage::disk('public')->delete($relativePath);
+            }
+        }
     }
 }

@@ -95,7 +95,15 @@ export interface Reserva {
     cancha?: Cancha;
 }
 
+export interface SlotTurno {
+    hora_inicio: string;
+    hora_fin: string;
+    disponible: boolean;
+    reserva?: Reserva;
+}
+
 export interface FormReservaData {
+    [key: string]: string | number | null | undefined;
     cancha_id: number | null;
     fecha_turno: string;
     hora_inicio: string;
@@ -106,9 +114,41 @@ export interface FormReservaData {
     observaciones?: string;
 }
 
-export interface SlotTurno {
-    hora_inicio: string;
-    hora_fin: string;
-    disponible: boolean;
-    reserva?: Reserva;
+//dashboard
+export interface MetricProps {
+    ingresos_hoy: number;
+    reservas_hoy: number;
+    ingresos_mes: number;
+    reservas_mes: number;
+    total_canchas: number;
+}
+
+export interface FranjaHoraria {
+    key: string;
+    label: string;
+    total: number;
+    porcentaje: number;
+    color: string;
+}
+
+export interface OcupacionDia {
+    dia: string;
+    total: number;
+    porcentaje: number;
+}
+
+export interface CanchaResumen {
+    id: number;
+    nombre: string;
+    es_techada: boolean;
+    reservas_mes: number;
+    recaudado_mes: number;
+}
+
+export interface DashboardProps {
+    metrics: MetricProps;
+    franjasHorarias: FranjaHoraria[];
+    ocupacionDias: OcupacionDia[];
+    proximasReservas: Reserva[];
+    canchasResumen: CanchaResumen[];
 }

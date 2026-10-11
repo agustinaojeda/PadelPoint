@@ -2,30 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreReservaRequest;
+use App\Http\Requests\UpdateEstadoReservaRequest;
 use App\Models\Cancha;
 use App\Models\Reserva;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Carbon\Carbon;
+use Inertia\Response;
 
 class ReservaController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
-        $fecha = $request->input('fecha', now()->format('Y-m-d'));
+        $fecha = $request->input('fecha', now()->toDateString());
 
-        $ahoraFecha = now()->format('Y-m-d');
-        $ahoraHora = now()->format('H:i:s');
-
-        Reserva::where('estado', 'confirmada')
-            ->where(function ($query) use ($ahoraFecha, $ahoraHora) {
-                $query->where('fecha_turno', '<', $ahoraFecha)
-                    ->orWhere(function ($q) use ($ahoraFecha, $ahoraHora) {
-                        $q->where('fecha_turno', '=', $ahoraFecha)
-                          ->where('hora_fin', '<=', $ahoraHora);
-                    });
-            })
-            ->update(['estado' => 'completada']);
+        Reserva::marcarVencidasComoCompletadas();
 
         $canchas = Cancha::where('esta_disponible', true)->get();
 
@@ -40,27 +32,17 @@ class ReservaController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreReservaRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'cancha_id' => 'required|exists:canchas,id',
-            'fecha_turno' => 'required|date',
-            'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'required|date_format:H:i',
-            'nombre_cliente' => 'required|string|max:255',
-            'telefono_cliente' => 'required|string|max:50',
-            'monto_total' => 'required|numeric|min:0',
-            'observaciones' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
-        $solapamiento = Reserva::where('cancha_id', $validated['cancha_id'])
-            ->where('fecha_turno', $validated['fecha_turno'])
-            ->where('hora_inicio', $validated['hora_inicio'])
-            ->where('estado', '!=', 'cancelada')
-            ->exists();
-
-        if ($solapamiento) {
-            return back()->withErrors(['hora_inicio' => 'Este turno ya fue reservado por otro usuario.']);
+        if (Reserva::tieneSolapamiento(
+            $validated['cancha_id'],
+            $validated['fecha_turno'],
+            $validated['hora_inicio'],
+            $validated['hora_fin']
+        )) {
+            return back()->withErrors(['hora_inicio' => 'El rango horario seleccionado se solapa con una reserva existente.']);
         }
 
         Reserva::create([
@@ -68,32 +50,28 @@ class ReservaController extends Controller
             'estado' => 'confirmada',
         ]);
 
-        return redirect()->back()->with('success', 'Reserva registrada con éxito.');
+        return back()->with('success', 'Reserva registrada con éxito.');
     }
 
-    public function cambiarEstado(Reserva $reserva, Request $request)
-{
-    if ($reserva->estado === 'completada') {
-        return back()->withErrors(['estado' => 'No se puede modificar el estado de una reserva completada.']);
+    public function cambiarEstado(Reserva $reserva, UpdateEstadoReservaRequest $request): RedirectResponse
+    {
+        if ($reserva->estado === 'completada') {
+            return back()->withErrors(['estado' => 'No se puede modificar el estado de una reserva completada.']);
+        }
+
+        $reserva->update(['estado' => $request->validated()['estado']]);
+
+        return back()->with('success', 'Estado de reserva actualizado.');
     }
 
-    $validated = $request->validate([
-        'estado' => 'required|in:pendiente,confirmada,cancelada,completada',
-    ]);
+    public function destroy(Reserva $reserva): RedirectResponse
+    {
+        if ($reserva->estado === 'completada') {
+            return back()->withErrors(['reserva' => 'No se puede eliminar una reserva que ya fue completada.']);
+        }
 
-    $reserva->update(['estado' => $validated['estado']]);
+        $reserva->delete();
 
-    return redirect()->back()->with('success', 'Estado de reserva actualizado.');
-}
-
-public function destroy(Reserva $reserva)
-{
-    if ($reserva->estado === 'completada') {
-        return back()->withErrors(['reserva' => 'No se puede eliminar una reserva que ya fue completada.']);
+        return back()->with('success', 'Reserva eliminada con éxito.');
     }
-
-    $reserva->delete();
-
-    return redirect()->back()->with('success', 'Reserva eliminada.');
-}
 }

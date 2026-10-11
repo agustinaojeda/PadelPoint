@@ -2,48 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
-use App\Models\Cancha;
 use App\Http\Requests\StoreCanchaRequest;
 use App\Http\Requests\UpdateCanchaRequest;
+use App\Models\Cancha;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class CanchaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * muestra el listado paginado de canchas
      */
-    public function index()
+    public function index(): Response
     {
         $canchas = Cancha::query()
-        ->orderBy('esta_disponible', 'desc') 
-        ->orderBy('created_at', 'desc')
-        ->paginate(9);
+            ->orderBy('esta_disponible', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(9);
 
-    return Inertia::render('canchas/index', [
-        'canchas' => $canchas,
-    ]);
+        return Inertia::render('canchas/index', [
+            'canchas' => $canchas,
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * guarda una nueva cancha en la bd
      */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreCanchaRequest $request)
+    public function store(StoreCanchaRequest $request): RedirectResponse
     {
         $validated = $request->validated();
         $validated['esta_disponible'] = true;
 
         if ($request->hasFile('imagen')) {
-            $path = $request->file('imagen')->store('canchas', 'public'); //le da un nombre unico
+            $path = $request->file('imagen')->store('canchas', 'public');
             $validated['imagen_url'] = 'storage/' . $path;
         } else {
             $validated['imagen_url'] = 'images/cancha-default.webp';
@@ -53,40 +46,19 @@ class CanchaController extends Controller
 
         Cancha::create($validated);
 
-        return redirect()->back()->with('success', 'Cancha creada con éxito.');
+        return back()->with('success', 'Cancha creada con éxito.');
     }
 
     /**
-     * Display the specified resource.
+     * actualiza la cancha existente
      */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateCanchaRequest $request, Cancha $cancha)
+    public function update(UpdateCanchaRequest $request, Cancha $cancha): RedirectResponse
     {
         $validated = $request->validated();
 
         if ($request->hasFile('imagen')) {
-            //elimina imagen anterior si no es la default
-            if ($cancha->imagen_url && $cancha->imagen_url !== 'images/cancha-default.jpg') {
-                $oldPath = str_replace('storage/', '', $cancha->imagen_url);
-                if (Storage::disk('public')->exists($oldPath)) {
-                    Storage::disk('public')->delete($oldPath);
-                }
-            }
+            // elimina la imagen previa si no es la default
+            $cancha->eliminarImagenFisica();
 
             $path = $request->file('imagen')->store('canchas', 'public');
             $validated['imagen_url'] = 'storage/' . $path;
@@ -98,46 +70,43 @@ class CanchaController extends Controller
 
         $cancha->update($validated);
 
-        return redirect()->back()->with('success', 'Cancha actualizada con éxito.');
+        return back()->with('success', 'Cancha actualizada con éxito.');
     }
 
     /**
-     * Remove the specified resource from storage. 
-     * baja fisica de eliminar no se hace, solo se cambia el estado no disponible
+     * baja logica 
      */
-    public function destroy(Cancha $cancha)
+    public function destroy(Cancha $cancha): RedirectResponse
     {
         $cancha->update([
-        'esta_disponible' => false,
-        'desactivada_en' => now(), 
-    ]);
+            'esta_disponible' => false,
+            'desactivada_en' => now(),
+        ]);
 
-        return redirect()->back()->with('success', 'Cancha desactivada con éxito.');
+        return back()->with('success', 'Cancha desactivada con éxito.');
     }
 
-    /**elimina completamente la cancha */
-    public function eliminar(Cancha $cancha)
+    /**
+     * reactivar cancha deshabilitada
+     */
+    public function activar(Cancha $cancha): RedirectResponse
     {
-        if ($cancha->imagen_url && $cancha->imagen_url !== 'images/cancha-default.jpg') {
-            $path = str_replace('storage/', '', $cancha->imagen_url);
+        $cancha->update([
+            'esta_disponible' => true,
+            'desactivada_en' => null,
+        ]);
 
-            if (Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
-        }
+        return back()->with('success', 'Cancha activada correctamente.');
+    }
 
+    /**
+     * eliminacion def de la cancha.
+     */
+    public function eliminar(Cancha $cancha): RedirectResponse
+    {
+        $cancha->eliminarImagenFisica();
         $cancha->delete();
 
-        return redirect()->back();
+        return back()->with('success', 'Cancha eliminada definitivamente.');
     }
-
-    public function activar(Cancha $cancha)
-{
-    $cancha->update([
-        'esta_disponible' => true,
-        'desactivada_en' => null, 
-    ]);
-
-    return back()->with('success', 'Cancha activada correctamente.');
-}
 }

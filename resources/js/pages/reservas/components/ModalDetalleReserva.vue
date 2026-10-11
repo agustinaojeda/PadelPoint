@@ -3,9 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import BaseModal from '@/components/ui/BaseModal.vue';
 import { Button } from '@/components/ui/button';
 import type { EstadoReserva, Reserva } from '@/types';
+import { formatHora, formatPrecio, formatearFecha, sanitizeWhatsAppPhone } from '@/utils/formateo';
 import { useForm } from '@inertiajs/vue3';
 import { Calendar, Clock, DollarSign, FileText, Phone, Trash2, User } from 'lucide-vue-next';
-import { formatearFecha } from '@/utils/formateo';
 
 const props = defineProps<{
     open: boolean;
@@ -26,7 +26,7 @@ const cambiarEstado = (nuevoEstado: EstadoReserva) => {
     if (!props.reserva) return;
 
     formEstado.estado = nuevoEstado;
-    formEstado.patch(route('reservas.cambiar-estado', props.reserva.id), {
+    formEstado.patch(route('reservas.cambiar-estado', { reserva: props.reserva.id }), {
         preserveScroll: true,
         onSuccess: () => emit('close'),
     });
@@ -35,7 +35,7 @@ const cambiarEstado = (nuevoEstado: EstadoReserva) => {
 const cancelarReserva = () => {
     if (!props.reserva) return;
     if (confirm('¿Estás seguro de que deseas cancelar/eliminar esta reserva? El turno quedará disponible nuevamente.')) {
-        formEliminar.delete(route('reservas.destroy', props.reserva.id), {
+        formEliminar.delete(route('reservas.destroy', { reserva: props.reserva.id }), {
             preserveScroll: true,
             onSuccess: () => emit('close'),
         });
@@ -71,9 +71,11 @@ const badgeVariant = (estado: EstadoReserva) => {
                 <div>
                     <h4 class="font-semibold text-foreground">{{ reserva.cancha?.nombre ?? 'Cancha' }}</h4>
                     <div class="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-                        <span class="flex items-center gap-1"> <Calendar class="h-3.5 w-3.5" /> {{ formatearFecha(reserva.fecha_turno) }} </span>
                         <span class="flex items-center gap-1">
-                            <Clock class="h-3.5 w-3.5" /> {{ reserva.hora_inicio.substring(0, 5) }} - {{ reserva.hora_fin.substring(0, 5) }} hs
+                            <Calendar class="h-3.5 w-3.5" /> {{ formatearFecha(reserva.fecha_turno) }}
+                        </span>
+                        <span class="flex items-center gap-1">
+                            <Clock class="h-3.5 w-3.5" /> {{ formatHora(reserva.hora_inicio) }} - {{ formatHora(reserva.hora_fin) }} hs
                         </span>
                     </div>
                 </div>
@@ -84,14 +86,18 @@ const badgeVariant = (estado: EstadoReserva) => {
 
             <div class="space-y-2 border-t pt-3 text-sm">
                 <div class="flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground"> <User class="h-3.5 w-3.5" /> Cliente: </span>
+                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <User class="h-3.5 w-3.5" /> Cliente:
+                    </span>
                     <span class="font-medium text-foreground">{{ reserva.nombre_cliente }}</span>
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground"> <Phone class="h-3.5 w-3.5" /> Teléfono / WhatsApp: </span>
+                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Phone class="h-3.5 w-3.5" /> Teléfono / WhatsApp:
+                    </span>
                     <a
-                        :href="`https://wa.me/${reserva.telefono_cliente.replace(/\D/g, '')}`"
+                        :href="`https://wa.me/${sanitizeWhatsAppPhone(reserva.telefono_cliente)}`"
                         target="_blank"
                         class="font-medium text-primary hover:underline"
                     >
@@ -100,12 +106,16 @@ const badgeVariant = (estado: EstadoReserva) => {
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground"> <DollarSign class="h-3.5 w-3.5" /> Monto Total: </span>
-                    <span class="font-semibold text-foreground"> ${{ reserva.monto_total.toLocaleString('es-AR') }} </span>
+                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <DollarSign class="h-3.5 w-3.5" /> Monto Total:
+                    </span>
+                    <span class="font-semibold text-foreground">{{ formatPrecio(reserva.monto_total) }}</span>
                 </div>
 
                 <div v-if="reserva.observaciones" class="space-y-1 pt-1">
-                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground"> <FileText class="h-3.5 w-3.5" /> Observaciones: </span>
+                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <FileText class="h-3.5 w-3.5" /> Observaciones:
+                    </span>
                     <p class="rounded-md bg-muted/50 p-2 text-xs italic text-muted-foreground">"{{ reserva.observaciones }}"</p>
                 </div>
             </div>
@@ -123,7 +133,8 @@ const badgeVariant = (estado: EstadoReserva) => {
                             class="h-7 text-xs"
                             :disabled="formEstado.processing"
                             @click="cambiarEstado('completada')"
-                        >Marcar como Completada
+                        >
+                            Marcar como Completada
                         </Button>
                         <Button
                             size="sm"
@@ -152,7 +163,9 @@ const badgeVariant = (estado: EstadoReserva) => {
                 </Button>
                 <div v-else></div>
 
-                <Button type="button" variant="outline" size="sm" class="h-8 text-xs" @click="$emit('close')"> Cerrar </Button>
+                <Button type="button" variant="outline" size="sm" class="h-8 text-xs" @click="$emit('close')">
+                    Cerrar
+                </Button>
             </div>
         </div>
     </BaseModal>

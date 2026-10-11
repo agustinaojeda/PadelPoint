@@ -94,3 +94,15 @@ export const formatearFecha = (fechaStr: string) => {
     const [anio, mes, dia] = fechaStr.split('-');
     return `${dia}/${mes}/${anio}`;
 };
+
+/**formatea HH:mm:ss a HH:mm */
+export const formatHora = (hora: string | null | undefined): string => {
+    if (!hora) return '';
+    return hora.substring(0, 5);
+};
+
+/**sanitiza un num para links de ws */
+export const sanitizeWhatsAppPhone = (phone: string | null | undefined): string => {
+    if (!phone) return '';
+    return phone.replace(/\D/g, '');
+};

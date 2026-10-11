@@ -1,37 +1,32 @@
 <?php
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreCanchaRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return true; 
+        return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255|unique:canchas,nombre',
-            'superficie' => 'nullable|string|max:100',
-            'es_techada' => 'boolean',
-            'precio' => 'required|numeric|min:0',
-            'descripcion' => 'nullable|string',
-            'duracion_turno' => 'required|integer|min:30',
-            'cantidad_jugadores' => 'required|integer|min:2',
-            'hora_apertura' => 'required|date_format:H:i',
-            'hora_cierre' => 'required|date_format:H:i|after:hora_apertura',
-            'dias_disponibles' => 'required|array|min:1',
-            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'nombre' => ['required', 'string', 'max:255', Rule::unique('canchas', 'nombre')],
+            'superficie' => ['nullable', 'string', 'max:100'],
+            'es_techada' => ['boolean'],
+            'precio' => ['required', 'numeric', 'min:0'],
+            'descripcion' => ['nullable', 'string'],
+            'duracion_turno' => ['required', 'integer', 'min:30'],
+            'cantidad_jugadores' => ['required', 'integer', 'min:2'],
+            'hora_apertura' => ['required', 'date_format:H:i'],
+            'hora_cierre' => ['required', 'date_format:H:i', 'after:hora_apertura'],
+            'dias_disponibles' => ['required', 'array', 'min:1'],
+            'dias_disponibles.*' => ['integer', 'between:0,6'],
+            'imagen' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
 
@@ -53,6 +48,7 @@ class StoreCanchaRequest extends FormRequest
             'hora_cierre.after' => 'La hora de cierre debe ser posterior a la hora de apertura.',
             'dias_disponibles.required' => 'Selecciona al menos un día disponible.',
             'dias_disponibles.min' => 'Debes seleccionar como mínimo un día de la semana.',
+            'dias_disponibles.*.between' => 'Los días seleccionados no son válidos.',
             'imagen.image' => 'El archivo seleccionado debe ser una imagen.',
             'imagen.mimes' => 'La imagen debe estar en formato JPG, JPEG, PNG o WEBP.',
             'imagen.max' => 'La imagen es muy pesada. El tamaño máximo permitido es 2 MB.',
