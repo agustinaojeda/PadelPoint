@@ -26,8 +26,8 @@ defineEmits<{
         </CardHeader>
 
         <CardContent class="flex-1 space-y-2 pt-4">
-            <template v-for="slot in slots" :key="slot.hora_inicio">
-                <SlotItem :slot="slot" @reservar="$emit('reservarSlot', $event)" @ver-detalle="$emit('verDetalleReserva', $event)" />
+            <template v-for="slotItem in slots" :key="slotItem.hora_inicio">
+                <SlotItem :turno-slot="slotItem" @reservar="$emit('reservarSlot', $event)" @ver-detalle="$emit('verDetalleReserva', $event)" />
             </template>
         </CardContent>
     </Card>
