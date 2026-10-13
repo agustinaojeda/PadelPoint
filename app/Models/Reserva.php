@@ -53,7 +53,7 @@ class Reserva extends Model
             ->when($ignorarReservaId, fn($q) => $q->where('id', '!=', $ignorarReservaId))
             ->where(function ($query) use ($horaInicio, $horaFin) {
                 $query->where('hora_inicio', '<', $horaFin)
-                      ->where('hora_fin', '>', $horaInicio);
+                    ->where('hora_fin', '>', $horaInicio);
             })
             ->exists();
     }
@@ -68,7 +68,7 @@ class Reserva extends Model
                 $query->where('fecha_turno', '<', $ahoraFecha)
                     ->orWhere(function ($q) use ($ahoraFecha, $ahoraHora) {
                         $q->where('fecha_turno', '=', $ahoraFecha)
-                          ->where('hora_fin', '<=', $ahoraHora);
+                            ->where('hora_fin', '<=', $ahoraHora);
                     });
             })
             ->update(['estado' => 'completada']);
@@ -124,8 +124,10 @@ class Reserva extends Model
             'ocupacionDias' => self::obtenerOcupacionPorDia($inicioMes, $finMes, $totalReservasMes),
             'proximasReservas' => $proximasReservas,
             'canchasResumen' => $canchasResumen,
+            'balanceAnual' => self::obtenerBalanceAnual(now()->year),
         ];
     }
+    
 
     /**
      * agrupa reservas por franja horaria 
@@ -209,5 +211,41 @@ class Reserva extends Model
                 'porcentaje' => round(($cantidad / $totalSegmentos) * 100),
             ];
         })->values()->all();
+    }
+    
+    //calcula las ganancias anuales
+    public static function obtenerBalanceAnual(int $anio): array
+    {
+        $mesesNombres = [
+            1 => 'Ene',
+            2 => 'Feb',
+            3 => 'Mar',
+            4 => 'Abr',
+            5 => 'May',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Ago',
+            9 => 'Sep',
+            10 => 'Oct',
+            11 => 'Nov',
+            12 => 'Dic'
+        ];
+
+        $ingresosPorMes = self::selectRaw('MONTH(fecha_turno) as mes, SUM(monto_total) as total')
+            ->whereYear('fecha_turno', $anio)
+            ->whereIn('estado', ['confirmada', 'completada'])
+            ->groupBy('mes')
+            ->pluck('total', 'mes');
+
+        $balance = [];
+        foreach ($mesesNombres as $numMes => $nombre) {
+            $balance[] = [
+                'mes' => $nombre,
+                'num_mes' => $numMes,
+                'total' => (float) ($ingresosPorMes[$numMes] ?? 0),
+            ];
+        }
+
+        return $balance;
     }
 }

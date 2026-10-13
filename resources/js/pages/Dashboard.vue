@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, CanchaResumen, FranjaHoraria, MetricProps, OcupacionDia, Reserva } from '@/types';
+import type { BreadcrumbItem, CanchaResumen, FranjaHoraria, MetricProps, OcupacionDia, Reserva, BalanceAnual } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
 import { Calendar } from 'lucide-vue-next';
 
@@ -10,6 +10,7 @@ import MetricasCard from '@/components/dashboard/MetricasCard.vue';
 import OcupacionFranjasCard from '@/components/dashboard/OcupacionFranjasCard.vue';
 import ProxReservasCard from '@/components/dashboard/ProxReservasCard.vue';
 import RendimientoCanchasCard from '@/components/dashboard/RendimientoCanchasCard.vue';
+import BalanceAnualChart from '@/components/dashboard/BalanceAnualChart.vue';
 
 withDefaults(
     defineProps<{
@@ -18,6 +19,7 @@ withDefaults(
         ocupacionDias?: OcupacionDia[];
         proximasReservas?: Reserva[];
         canchasResumen?: CanchaResumen[];
+        balanceAnual?: BalanceAnual[];
     }>(),
     {
         metrics: () => ({
@@ -31,14 +33,15 @@ withDefaults(
         ocupacionDias: () => [],
         proximasReservas: () => [],
         canchasResumen: () => [],
+        balanceAnual: () => [],
     },
 );
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: route('dashboard') }];
+const breadcrumbs: BreadcrumbItem[] = [{ title: 'Panel de Control', href: route('dashboard') }];
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Panel de Control" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-col gap-6 p-4 md:p-6">
@@ -68,6 +71,8 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: route('dashbo
                 <ProxReservasCard :reservas="proximasReservas" />
                 <RendimientoCanchasCard :canchas="canchasResumen" />
             </div>
+
+            <BalanceAnualChart :data="balanceAnual" />
         </div>
     </AppLayout>
 </template>

@@ -5,7 +5,7 @@ import type { Reserva, SlotTurno } from '@/types';
 import { Eye, Plus } from 'lucide-vue-next';
 
 defineProps<{
-    turnoSlot: SlotTurno; // Renombrado de 'slot' a 'turnoSlot'
+    turnoSlot: SlotTurno; 
 }>();
 
 defineEmits<{

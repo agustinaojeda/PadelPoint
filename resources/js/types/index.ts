@@ -152,3 +152,9 @@ export interface DashboardProps {
     proximasReservas: Reserva[];
     canchasResumen: CanchaResumen[];
 }
+
+export interface BalanceAnual {
+    mes: string;
+    num_mes: number;
+    total: number;
+}
