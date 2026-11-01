@@ -2,8 +2,9 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatDuracion, formatHora, formatPrecio, formatearDias } from '@/lib/formatos';
 import type { Cancha } from '@/types';
-import { formatDuracion, formatHora, formatPrecio, formatearDias } from '@/utils/formateo';
+import { Trash2 } from 'lucide-vue-next';
 
 defineProps<{
     cancha: Cancha;
@@ -13,6 +14,7 @@ defineEmits<{
     (e: 'edit', cancha: Cancha): void;
     (e: 'delete', id: number): void;
     (e: 'activar', cancha: Cancha): void;
+    (e: 'eliminar', cancha: Cancha): void;
 }>();
 </script>
 
@@ -32,9 +34,7 @@ defineEmits<{
                     <span class="text-lg font-bold text-emerald-600">
                         {{ formatPrecio(cancha.precio) }}
                     </span>
-                    <span class="text-sm font-light text-emerald-600">
-                        /por turno
-                    </span>
+                    <span class="text-sm font-light text-emerald-600"> /por turno </span>
                 </div>
                 <CardDescription v-if="cancha.descripcion?.trim()" class="mt-1 line-clamp-2">
                     {{ cancha.descripcion }}
@@ -52,9 +52,7 @@ defineEmits<{
                 <div class="border-t pt-2 text-xs text-muted-foreground">
                     Horario: {{ formatHora(cancha.hora_apertura) }} a {{ formatHora(cancha.hora_cierre) }} hs
                 </div>
-                <div class="text-xs text-muted-foreground">
-                    Días: {{ formatearDias(cancha.dias_disponibles) }}
-                </div>
+                <div class="text-xs text-muted-foreground">Días: {{ formatearDias(cancha.dias_disponibles) }}</div>
             </CardContent>
         </div>
 
@@ -62,12 +60,11 @@ defineEmits<{
             <Button v-if="cancha.esta_disponible" variant="secondary" class="w-full" size="sm" @click="$emit('delete', cancha.id)">
                 Desactivar
             </Button>
-            <Button v-else variant="secondary" class="w-full" size="sm" @click="$emit('activar', cancha)">
-                Activar
-            </Button>
+            <Button v-else variant="secondary" class="w-full" size="sm" @click="$emit('activar', cancha)"> Activar </Button>
 
-            <Button v-if="cancha.esta_disponible" class="w-full" size="sm" @click="$emit('edit', cancha)">
-                Editar
+            <Button v-if="cancha.esta_disponible" class="w-full" size="sm" @click="$emit('edit', cancha)"> Editar </Button>
+            <Button v-else variant="destructive" size="sm" class="w-full gap-1" @click="$emit('eliminar', cancha)">
+                <Trash2 class="h-3.5 w-3.5" /> Eliminar
             </Button>
         </CardFooter>
     </Card>

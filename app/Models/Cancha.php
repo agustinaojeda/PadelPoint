@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
+use App\Support\CanchaImagen;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 
 class Cancha extends Model
 {
     use HasFactory;
-
-    protected $table = 'canchas';
 
     protected $fillable = [
         'nombre',
@@ -30,15 +28,21 @@ class Cancha extends Model
         'desactivada_en',
     ];
 
-    protected $casts = [
-        'es_techada' => 'boolean',
-        'esta_disponible' => 'boolean',
-        'desactivada_en' => 'datetime',
-        'precio' => 'float',
-        'duracion_turno' => 'integer',
-        'cantidad_jugadores' => 'integer',
-        'dias_disponibles' => 'array',
-    ];
+    /**
+     * @return array<string, mixed>
+     */
+    protected function casts(): array
+    {
+        return [
+            'es_techada' => 'boolean',
+            'esta_disponible' => 'boolean',
+            'desactivada_en' => 'datetime',
+            'precio' => 'float',
+            'duracion_turno' => 'integer',
+            'cantidad_jugadores' => 'integer',
+            'dias_disponibles' => 'array',
+        ];
+    }
 
     public function reservas(): HasMany
     {
@@ -46,33 +50,20 @@ class Cancha extends Model
     }
 
     /**
-     * retorna siempre una URL completa y accesible para la imagen
+     * Retorna siempre una URL completa y accesible para la imagen.
      */
     protected function imagenUrl(): Attribute
     {
         return Attribute::make(
-            get: function ($value) {
-                if ($value && Storage::disk('public')->exists(str_replace('storage/', '', $value))) {
-                    return asset($value);
-                }
-
-                return asset('images/cancha-default.webp');
-            }
+            get: fn (?string $value): string => CanchaImagen::url($value),
         );
     }
 
     /**
-     * helper para eliminar la imagen fisica del disco si no es la por defecto
+     * Elimina la imagen física del disco si no es la imagen por defecto.
      */
     public function eliminarImagenFisica(): void
     {
-        $rawPath = $this->attributes['imagen_url'] ?? null;
-
-        if ($rawPath && !str_contains($rawPath, 'cancha-default')) {
-            $relativePath = str_replace('storage/', '', $rawPath);
-            if (Storage::disk('public')->exists($relativePath)) {
-                Storage::disk('public')->delete($relativePath);
-            }
-        }
+        CanchaImagen::deleteFor($this);
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\EstadoReserva;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateEstadoReservaRequest extends FormRequest
 {
@@ -11,10 +13,13 @@ class UpdateEstadoReservaRequest extends FormRequest
         return true;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [
-            'estado' => ['required', 'in:pendiente,confirmada,cancelada,completada'],
+            'estado' => ['required', Rule::enum(EstadoReserva::class)],
         ];
     }
 }

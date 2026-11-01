@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import BaseModal from '@/components/ui/BaseModal.vue';
+import BaseModal from '@/components/shared/BaseModal.vue';
 import { Button } from '@/components/ui/button';
 import { useCanchaForm } from '@/composables/useCanchaForm';
+import { diasSemana } from '@/lib/formatos';
 import type { Cancha } from '@/types';
-import { diasSemana } from '@/utils/formateo';
 
 const props = defineProps<{
     open: boolean;

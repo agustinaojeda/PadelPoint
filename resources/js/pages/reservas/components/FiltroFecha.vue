@@ -30,9 +30,7 @@ const irAHoy = () => {
         <Button variant="outline" size="icon" @click="navegarDia(-1)">
             <ChevronLeft class="h-4 w-4" />
         </Button>
-        <Button variant="outline" @click="irAHoy">
-            Hoy
-        </Button>
+        <Button variant="outline" @click="irAHoy"> Hoy </Button>
         <input
             type="date"
             :value="fecha"

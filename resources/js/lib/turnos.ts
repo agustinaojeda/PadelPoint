@@ -1,7 +1,7 @@
 import type { Cancha, Reserva, SlotTurno } from '@/types';
 
 /**
- * convierte hora a minutos 
+ * convierte hora a minutos
  */
 function horaAMinutos(horaStr: string): number {
     const [h, m] = horaStr.split(':').map(Number);
@@ -12,13 +12,15 @@ function horaAMinutos(horaStr: string): number {
  * convierte minutos a formato de hora
  */
 function minutosAHora(minutos: number): string {
-    const h = Math.floor(minutos / 60).toString().padStart(2, '0');
+    const h = Math.floor(minutos / 60)
+        .toString()
+        .padStart(2, '0');
     const m = (minutos % 60).toString().padStart(2, '0');
     return `${h}:${m}`;
 }
 
 /**
- * genera la grilla de slots de una cancha 
+ * genera la grilla de slots de una cancha
  */
 export function generarSlotsCancha(cancha: Cancha, reservasDelDia: Reserva[]): SlotTurno[] {
     const slots: SlotTurno[] = [];
@@ -45,9 +47,7 @@ export function generarSlotsCancha(cancha: Cancha, reservasDelDia: Reserva[]): S
         const slotInicioMin = actualMin;
         const slotFinMin = actualMin + duracion;
 
-        const coincidencia = reservasProcesadas.find(
-            (r) => slotInicioMin < r.finMin && slotFinMin > r.inicioMin
-        );
+        const coincidencia = reservasProcesadas.find((r) => slotInicioMin < r.finMin && slotFinMin > r.inicioMin);
 
         slots.push({
             hora_inicio: minutosAHora(slotInicioMin),

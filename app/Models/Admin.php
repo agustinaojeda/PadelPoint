@@ -10,8 +10,6 @@ class Admin extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $table = 'admins';
-
     protected $fillable = [
         'nombreAdmin',
         'correoAdmin',
@@ -23,28 +21,28 @@ class Admin extends Authenticatable
         'remember_token',
     ];
 
-    public function getAuthPasswordName()
+    /**
+     * @return array<string, mixed>
+     */
+    protected function casts(): array
+    {
+        return [
+            'contrasenaAdmin' => 'hashed',
+        ];
+    }
+
+    public function getAuthPasswordName(): string
     {
         return 'contrasenaAdmin';
     }
 
-    public function getEmailForVerification()
+    public function getEmailForPasswordReset(): string
     {
         return $this->correoAdmin;
     }
 
-    public function getEmailForPasswordReset()
+    public function routeNotificationForMail(mixed $notification = null): string
     {
         return $this->correoAdmin;
     }
-
-    public function routeNotificationForMail($notification)
-    {
-        return $this->correoAdmin;
-    }
-
-    public function sendPasswordResetNotification($token)
-{
-    $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($token));
-}
 }

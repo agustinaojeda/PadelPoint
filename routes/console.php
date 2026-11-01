@@ -8,4 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('canchas:purge-desactivadas')->daily();
+Schedule::command('app:completar-reservas-vencidas')->hourly();
+Schedule::command('app:purge-desactivadas-canchas')->daily();

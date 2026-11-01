@@ -5,7 +5,7 @@ import type { Reserva, SlotTurno } from '@/types';
 import { Eye, Plus } from 'lucide-vue-next';
 
 defineProps<{
-    turnoSlot: SlotTurno; 
+    turnoSlot: SlotTurno;
 }>();
 
 defineEmits<{
@@ -26,18 +26,12 @@ defineEmits<{
         ]"
     >
         <div class="flex flex-col">
-            <span class="font-medium text-foreground">
-                {{ turnoSlot.hora_inicio }} - {{ turnoSlot.hora_fin }} hs
-            </span>
+            <span class="font-medium text-foreground"> {{ turnoSlot.hora_inicio }} - {{ turnoSlot.hora_fin }} hs </span>
 
             <span
                 v-if="!turnoSlot.disponible && turnoSlot.reserva"
                 class="text-xs font-medium"
-                :class="
-                    turnoSlot.reserva.estado === 'confirmada'
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-orange-600 dark:text-orange-400'
-                "
+                :class="turnoSlot.reserva.estado === 'confirmada' ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'"
             >
                 {{ turnoSlot.reserva.nombre_cliente }}
             </span>
@@ -57,9 +51,7 @@ defineEmits<{
             <div
                 class="flex items-center gap-1 text-xs font-medium capitalize"
                 :class="
-                    turnoSlot.reserva?.estado === 'confirmada'
-                        ? 'text-emerald-700 dark:text-emerald-300'
-                        : 'text-orange-700 dark:text-orange-300'
+                    turnoSlot.reserva?.estado === 'confirmada' ? 'text-emerald-700 dark:text-emerald-300' : 'text-orange-700 dark:text-orange-300'
                 "
             >
                 <span>{{ turnoSlot.reserva?.estado ?? 'reservado' }}</span>

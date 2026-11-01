@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reserva;
-use Illuminate\Http\Request;
+use App\Queries\Dashboard\GetDashboardOverview;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request): Response
+    public function __invoke(GetDashboardOverview $getDashboardOverview): Response
     {
-        Reserva::marcarVencidasComoCompletadas();
-
-        return Inertia::render('Dashboard', Reserva::obtenerDatosDashboard());
+        return Inertia::render('dashboard/index', $getDashboardOverview());
     }
 }

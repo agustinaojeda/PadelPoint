@@ -10,7 +10,6 @@ import { computed, ref } from 'vue';
 import CanchaCard from './components/CanchaCard.vue';
 import CanchaFormModal from './components/CanchaFormModal.vue';
 
-import { useFeedback } from '@/composables/useFeedback';
 import { useScrollInfinito } from '@/composables/useScrollInfinito';
 
 interface CanchasPaginadas {
@@ -28,7 +27,6 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Canchas', href: route('canchas.index') },
 ];
 
-useFeedback();
 const { items: listaCanchas, cargando, triggerScroll } = useScrollInfinito(() => props.canchas, 'canchas');
 
 const busqueda = ref('');
@@ -37,9 +35,7 @@ const canchasFiltradas = computed(() => {
     if (!busqueda.value.trim()) return listaCanchas.value;
     const query = busqueda.value.toLowerCase().trim();
     return listaCanchas.value.filter(
-        (cancha) =>
-            cancha.nombre.toLowerCase().includes(query) ||
-            (cancha.descripcion && cancha.descripcion.toLowerCase().includes(query))
+        (cancha) => cancha.nombre.toLowerCase().includes(query) || (cancha.descripcion && cancha.descripcion.toLowerCase().includes(query)),
     );
 });
 
@@ -70,6 +66,12 @@ const desactivarCancha = (id: number) => {
 const activarCancha = (cancha: Cancha) => {
     router.patch(route('canchas.activar', { cancha: cancha.id }), {}, { preserveScroll: true });
 };
+
+const eliminarCancha = (cancha: Cancha) => {
+    if (confirm('¿Seguro que deseas eliminar definitivamente esta cancha? Esta acción no se puede deshacer.')) {
+        router.delete(route('canchas.eliminar', { cancha: cancha.id }), { preserveScroll: true });
+    }
+};
 </script>
 
 <template>
@@ -87,12 +89,7 @@ const activarCancha = (cancha: Cancha) => {
             <div v-if="listaCanchas.length > 0" class="mb-8 max-w-md">
                 <div class="relative">
                     <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                        v-model="busqueda"
-                        type="text"
-                        placeholder="Buscar cancha por nombre..."
-                        class="pl-9"
-                    />
+                    <Input v-model="busqueda" type="text" placeholder="Buscar cancha por nombre..." class="pl-9" />
                 </div>
             </div>
 
@@ -106,6 +103,7 @@ const activarCancha = (cancha: Cancha) => {
                         @edit="abrirEditarModal"
                         @delete="desactivarCancha"
                         @activar="activarCancha"
+                        @eliminar="eliminarCancha"
                     />
                 </div>
 
@@ -114,9 +112,7 @@ const activarCancha = (cancha: Cancha) => {
                         <span class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary"></span>
                         Cargando más canchas...
                     </div>
-                    <p v-else-if="!canchas.next_page_url" class="text-sm text-muted-foreground">
-                        No hay más canchas para mostrar.
-                    </p>
+                    <p v-else-if="!canchas.next_page_url" class="text-sm text-muted-foreground">No hay más canchas para mostrar.</p>
                 </div>
             </template>
 

@@ -5,30 +5,28 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { LayoutGrid, LandPlot, Calendar as CalendarIcon } from 'lucide-vue-next';
+import { Calendar as CalendarIcon, LandPlot, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Panel de Control',
-        href: '/dashboard',
+        href: route('dashboard', undefined, false),
         icon: LayoutGrid,
     },
     {
         title: 'Canchas',
-        href: '/canchas',
+        href: route('canchas.index', undefined, false),
         icon: LandPlot,
     },
     {
         title: 'Reservas',
-        href: '/reservas',
+        href: route('reservas.index', undefined, false),
         icon: CalendarIcon,
     },
 ];
 
-const footerNavItems: NavItem[] = [
-    
-];
+const footerNavItems: NavItem[] = [];
 </script>
 
 <template>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { useFeedback } from '@/composables/useFeedback';
 import AppLayout from '@/layouts/app/AppSidebarLayout.vue';
 import type { BreadcrumbItemType } from '@/types';
+import { Info } from 'lucide-vue-next';
 import { Toaster } from 'vue-sonner';
 import 'vue-sonner/style.css';
-import { Info } from 'lucide-vue-next';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
@@ -12,13 +13,14 @@ interface Props {
 withDefaults(defineProps<Props>(), {
     breadcrumbs: () => [],
 });
+
+useFeedback();
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
         <slot />
         <Toaster position="bottom-right" richColors>
-
             <template>
                 <Info class="h-5 w-5 text-blue-500" />
             </template>

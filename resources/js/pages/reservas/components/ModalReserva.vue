@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import BaseModal from '@/components/shared/BaseModal.vue';
 import { Badge } from '@/components/ui/badge';
-import BaseModal from '@/components/ui/BaseModal.vue';
 import { Button } from '@/components/ui/button';
 import type { Cancha, FormReservaData, SlotTurno } from '@/types';
 import { useForm } from '@inertiajs/vue3';
@@ -42,7 +42,7 @@ watch(
             form.clearErrors();
         }
     },
-    { immediate: true }
+    { immediate: true },
 );
 
 const submit = () => {
@@ -165,9 +165,7 @@ const cerrarModal = () => {
             </p>
 
             <div class="flex justify-end gap-3 border-t pt-4">
-                <Button type="button" variant="outline" @click="cerrarModal" :disabled="form.processing">
-                    Cancelar
-                </Button>
+                <Button type="button" variant="outline" @click="cerrarModal" :disabled="form.processing"> Cancelar </Button>
                 <Button type="submit" :disabled="form.processing">
                     {{ form.processing ? 'Guardando...' : 'Confirmar Reserva' }}
                 </Button>

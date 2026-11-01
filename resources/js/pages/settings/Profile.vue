@@ -12,7 +12,6 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
 
 interface Props {
-    mustVerifyEmail: boolean;
     status?: string;
     className?: string;
 }
@@ -69,7 +68,7 @@ const submit = () => {
                         />
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
-                    
+
                     <div class="flex items-center gap-4">
                         <Button :disabled="form.processing">Guardar</Button>
 

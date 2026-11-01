@@ -55,7 +55,9 @@ const submit = () => {
                 <div class="grid gap-2">
                     <div class="flex items-center justify-between">
                         <Label for="contrasenaAdmin">Contraseña</Label>
-                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" :tabindex="5"> ¿Olvidaste la contraseña? </TextLink>
+                        <TextLink v-if="canResetPassword" :href="route('password.request')" class="text-sm" :tabindex="5">
+                            ¿Olvidaste la contraseña?
+                        </TextLink>
                     </div>
                     <Input
                         id="contrasenaAdmin"
@@ -81,7 +83,6 @@ const submit = () => {
                     Ingresar
                 </Button>
             </div>
-
         </form>
     </AuthBase>
 </template>

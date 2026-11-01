@@ -80,10 +80,7 @@ const cerrarModal = () => {
             </div>
 
             <div class="space-y-6 pt-6">
-                <div
-                    v-if="canchas.length === 0"
-                    class="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center"
-                >
+                <div v-if="canchas.length === 0" class="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
                     <CalendarIcon class="h-12 w-12 text-muted-foreground/50" />
                     <h3 class="mt-4 text-lg font-semibold">No hay canchas disponibles</h3>
                     <p class="mb-4 text-sm text-muted-foreground">Primero debes registrar e habilitar canchas para comenzar a recibir reservas.</p>
@@ -123,9 +120,5 @@ const cerrarModal = () => {
         @close="cerrarModal"
     />
 
-    <ModalDetalleReserva
-        v-model:open="modalDetalleAbierto"
-        :reserva="reservaParaDetalle"
-        @close="modalDetalleAbierto = false"
-    />
+    <ModalDetalleReserva v-model:open="modalDetalleAbierto" :reserva="reservaParaDetalle" @close="modalDetalleAbierto = false" />
 </template>
