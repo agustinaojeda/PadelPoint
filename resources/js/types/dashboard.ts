@@ -8,16 +8,16 @@ export interface MetricProps {
     total_canchas: number;
 }
 
+export type FranjaKey = 'manana' | 'tarde' | 'noche';
+
 export interface FranjaHoraria {
-    key: string;
-    label: string;
+    key: FranjaKey;
     total: number;
     porcentaje: number;
-    color: string;
 }
 
 export interface OcupacionDia {
-    dia: string;
+    dia_semana: number;
     total: number;
     porcentaje: number;
 }
@@ -31,8 +31,7 @@ export interface CanchaResumen {
 }
 
 export interface BalanceAnual {
-    mes: string;
-    num_mes: number;
+    mes: number;
     total: number;
 }
 

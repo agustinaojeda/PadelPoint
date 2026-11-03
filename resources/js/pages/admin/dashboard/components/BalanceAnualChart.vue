@@ -1,18 +1,28 @@
 <script setup lang="ts">
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrecio } from '@/lib/formatos';
+import { BalanceAnual } from '@/types';
 import { TrendingUp } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
-interface BalanceItem {
-    mes: string;
-    num_mes: number;
-    total: number;
-}
-
 const props = defineProps<{
-    data: BalanceItem[];
+    data: BalanceAnual[];
 }>();
+
+const MESES: Record<number, string> = {
+    1: 'Ene',
+    2: 'Feb',
+    3: 'Mar',
+    4: 'Abr',
+    5: 'May',
+    6: 'Jun',
+    7: 'Jul',
+    8: 'Ago',
+    9: 'Sep',
+    10: 'Oct',
+    11: 'Nov',
+    12: 'Dic',
+};
 
 const hoveredIndex = ref<number | null>(null);
 
@@ -110,7 +120,7 @@ const totalAnual = computed(() => props.data.reduce((acc, curr) => acc + curr.to
 
                         <!--est del mes-->
                         <text :x="p.x" :y="height - 8" text-anchor="middle" class="select-none fill-muted-foreground text-[10px] font-medium">
-                            {{ p.mes }}
+                            {{ MESES[p.mes] }}
                         </text>
 
                         <g v-if="hoveredIndex === index" class="pointer-events-none transition-opacity duration-200">

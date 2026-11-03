@@ -1,7 +1,7 @@
 <?php
 
 use App\Cancha\Controllers\CanchaController;
-use App\Http\Controllers\DashboardController;
+use App\Dashboard\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Reserva\Controllers\AdminReservaController;
 use App\Reserva\Controllers\ReservaController;

@@ -31,7 +31,7 @@ The auth/settings scaffolding comes from the Laravel Vue starter kit; app-specif
 ## Database and tests
 
 - Dev DB is MySQL (`padelpoint`); tests use in-memory SQLite (`phpunit.xml`), with `RefreshDatabase` applied to every Feature test in `tests/Pest.php`.
-- Raw SQL must work on both drivers. `GetDashboardOverview` switches between SQLite `strftime` and MySQL `DAYOFWEEK`/`MONTH`; add both branches for new date-based SQL.
+- Raw SQL must work on both drivers. `GetOcupacionPorDia` and `GetBalanceAnual` switch between SQLite `strftime` and MySQL `DAYOFWEEK`/`MONTH`; add both branches for new date-based SQL.
 - Timezone `America/Argentina/Buenos_Aires`, locale `es`, Faker `es_ES`. Seeded admin: `admin@padelpoint.com` / `admin123`.
 - Pest style: `test('...')` names, Feature tests under `tests/Feature`, and factories with states such as `completada()`, `cancelada()`, and `desactivada()`.
 - Prettier uses 4 spaces, 150 columns, single quotes, organized imports, and sorted Tailwind classes. Vue components need a single root element. If `format:check` flags untouched files, format only the files you changed.
