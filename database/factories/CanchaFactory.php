@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Cancha;
-use App\Support\CanchaImagen;
+use App\Cancha\Models\Cancha;
+use App\Cancha\Support\CanchaImagen;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

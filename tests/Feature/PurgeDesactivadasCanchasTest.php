@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Cancha;
+use App\Cancha\Models\Cancha;
 use App\Reserva\Models\Reserva;
 
 test('the purge command deletes old deactivated canchas without reservas', function () {

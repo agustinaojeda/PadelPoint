@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Actions\Cancha;
+namespace App\Cancha\Actions;
 
-use App\Models\Cancha;
-use App\Support\CanchaImagen;
+use App\Cancha\Models\Cancha;
+use App\Cancha\Support\CanchaImagen;
 use Illuminate\Http\UploadedFile;
 
 class CreateCancha
@@ -15,8 +15,6 @@ class CreateCancha
      */
     public function __invoke(array $data, ?UploadedFile $imagen = null): Cancha
     {
-        unset($data['imagen']);
-
         $data['esta_disponible'] = true;
         $data['imagen_url'] = $imagen
             ? CanchaImagen::store($imagen)

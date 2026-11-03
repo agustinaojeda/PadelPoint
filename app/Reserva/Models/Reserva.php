@@ -2,8 +2,8 @@
 
 namespace App\Reserva\Models;
 
+use App\Cancha\Models\Cancha;
 use App\Reserva\Enums\EstadoReserva;
-use App\Models\Cancha;
 use Database\Factories\ReservaFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

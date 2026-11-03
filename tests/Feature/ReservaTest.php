@@ -1,7 +1,7 @@
 <?php
 
+use App\Cancha\Models\Cancha;
 use App\Models\Admin;
-use App\Models\Cancha;
 use App\Reserva\Enums\EstadoReserva;
 use App\Reserva\Models\Reserva;
 
@@ -295,4 +295,8 @@ test('admin cannot create a reserva on a day the cancha does not attend', functi
         ->assertSessionHasErrors('fecha_turno');
 
     $this->assertDatabaseCount('reservas', 0);
+});
+
+test('reserva estado enum values are exposed', function () {
+    expect(EstadoReserva::values())->toBe(['pendiente', 'confirmada', 'cancelada', 'completada']);
 });

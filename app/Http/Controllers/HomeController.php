@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cancha;
+use App\Cancha\Queries\GetCanchasPublicas;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -11,10 +11,10 @@ class HomeController extends Controller
     /**
      * Muestra la página principal pública.
      */
-    public function __invoke(): Response
+    public function __invoke(GetCanchasPublicas $getCanchasPublicas): Response
     {
         return Inertia::render('home/index', [
-            'canchas' => Cancha::query()->disponibles()->orderBy('nombre')->get(),
+            'canchas' => $getCanchasPublicas(),
         ]);
     }
 }

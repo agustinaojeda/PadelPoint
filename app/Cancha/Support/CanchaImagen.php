@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Support;
+namespace App\Cancha\Support;
 
-use App\Models\Cancha;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,19 +28,11 @@ class CanchaImagen
      */
     public static function url(?string $ruta): string
     {
-        if ($ruta !== null && Storage::disk(self::DISK)->exists(self::relativePath($ruta))) {
-            return asset($ruta);
+        if (self::isDefault($ruta)) {
+            return asset(self::DEFAULT_PATH);
         }
 
-        return asset(self::DEFAULT_PATH);
-    }
-
-    /**
-     * Elimina del disco la imagen de la cancha si no es la imagen por defecto.
-     */
-    public static function deleteFor(Cancha $cancha): void
-    {
-        self::deleteIfCustom($cancha->getRawOriginal('imagen_url'));
+        return asset($ruta);
     }
 
     public static function deleteIfCustom(?string $ruta): void
@@ -59,7 +50,7 @@ class CanchaImagen
 
     public static function isDefault(?string $ruta): bool
     {
-        return $ruta === null || str_contains($ruta, 'cancha-default');
+        return $ruta === null || $ruta === '' || str_contains($ruta, 'cancha-default');
     }
 
     private static function relativePath(?string $ruta): string

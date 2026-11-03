@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Cancha\Controllers;
 
-use App\Actions\Cancha\ActivateCancha;
-use App\Actions\Cancha\CreateCancha;
-use App\Actions\Cancha\DeactivateCancha;
-use App\Actions\Cancha\DeleteCancha;
-use App\Actions\Cancha\UpdateCancha;
-use App\Http\Requests\StoreCanchaRequest;
-use App\Http\Requests\UpdateCanchaRequest;
-use App\Models\Cancha;
+use App\Cancha\Actions\ActivateCancha;
+use App\Cancha\Actions\CreateCancha;
+use App\Cancha\Actions\DeactivateCancha;
+use App\Cancha\Actions\DeleteCancha;
+use App\Cancha\Actions\UpdateCancha;
+use App\Cancha\Models\Cancha;
+use App\Cancha\Queries\GetCanchasAdmin;
+use App\Cancha\Requests\StoreCanchaRequest;
+use App\Cancha\Requests\UpdateCanchaRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -27,15 +29,10 @@ class CanchaController extends Controller
     /**
      * Muestra el listado paginado de canchas.
      */
-    public function index(): Response
+    public function index(GetCanchasAdmin $getCanchasAdmin): Response
     {
-        $canchas = Cancha::query()
-            ->orderBy('esta_disponible', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(9);
-
         return Inertia::render('admin/canchas/index', [
-            'canchas' => $canchas,
+            'canchas' => $getCanchasAdmin(),
         ]);
     }
 
@@ -44,7 +41,7 @@ class CanchaController extends Controller
      */
     public function store(StoreCanchaRequest $request): RedirectResponse
     {
-        ($this->createCancha)($request->validated(), $request->file('imagen'));
+        ($this->createCancha)($request->safe()->except('imagen'), $request->file('imagen'));
 
         return back()->with('success', 'Cancha creada con éxito.');
     }
@@ -54,7 +51,7 @@ class CanchaController extends Controller
      */
     public function update(UpdateCanchaRequest $request, Cancha $cancha): RedirectResponse
     {
-        ($this->updateCancha)($cancha, $request->validated(), $request->file('imagen'));
+        ($this->updateCancha)($cancha, $request->safe()->except('imagen'), $request->file('imagen'));
 
         return back()->with('success', 'Cancha actualizada con éxito.');
     }

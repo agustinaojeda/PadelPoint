@@ -2,7 +2,7 @@
 
 namespace App\Queries\Dashboard;
 
-use App\Models\Cancha;
+use App\Cancha\Models\Cancha;
 use App\Reserva\Models\Reserva;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;

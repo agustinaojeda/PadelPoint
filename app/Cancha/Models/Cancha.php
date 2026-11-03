@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Cancha\Models;
 
+use App\Cancha\Support\CanchaImagen;
 use App\Reserva\Models\Reserva;
-use App\Support\CanchaImagen;
+use Database\Factories\CanchaFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cancha extends Model
 {
     use HasFactory;
+
+    protected static function newFactory(): CanchaFactory
+    {
+        return CanchaFactory::new();
+    }
 
     protected $fillable = [
         'nombre',
@@ -72,13 +78,5 @@ class Cancha extends Model
         return Attribute::make(
             get: fn (?string $value): string => CanchaImagen::url($value),
         );
-    }
-
-    /**
-     * Elimina la imagen física del disco si no es la imagen por defecto.
-     */
-    public function eliminarImagenFisica(): void
-    {
-        CanchaImagen::deleteFor($this);
     }
 }

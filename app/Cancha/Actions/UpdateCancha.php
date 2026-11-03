@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Actions\Cancha;
+namespace App\Cancha\Actions;
 
-use App\Models\Cancha;
-use App\Support\CanchaImagen;
+use App\Cancha\Models\Cancha;
+use App\Cancha\Support\CanchaImagen;
 use Illuminate\Http\UploadedFile;
 
 class UpdateCancha
@@ -15,13 +15,16 @@ class UpdateCancha
      */
     public function __invoke(Cancha $cancha, array $data, ?UploadedFile $imagen = null): void
     {
-        unset($data['imagen']);
+        $rutaAnterior = $cancha->getRawOriginal('imagen_url');
 
         if ($imagen) {
-            $cancha->eliminarImagenFisica();
             $data['imagen_url'] = CanchaImagen::store($imagen);
         }
 
         $cancha->update($data);
+
+        if ($imagen) {
+            CanchaImagen::deleteIfCustom($rutaAnterior);
+        }
     }
 }

@@ -1,15 +1,48 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Cancha\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreCanchaRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * @return array<int, callable>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                if ($validator->errors()->isNotEmpty()) {
+                    return;
+                }
+
+                $apertura = $this->input('hora_apertura');
+                $cierre = $this->input('hora_cierre');
+                $duracion = (int) $this->input('duracion_turno');
+
+                if (! is_string($apertura) || ! is_string($cierre) || $duracion <= 0) {
+                    return;
+                }
+
+                $ventana = (int) Carbon::parse($apertura)->diffInMinutes(Carbon::parse($cierre));
+
+                if ($duracion > $ventana) {
+                    $validator->errors()->add(
+                        'duracion_turno',
+                        'La duración del turno no puede superar el horario de atención.',
+                    );
+                }
+            },
+        ];
     }
 
     public function rules(): array
@@ -25,7 +58,7 @@ class StoreCanchaRequest extends FormRequest
             'hora_apertura' => ['required', 'date_format:H:i'],
             'hora_cierre' => ['required', 'date_format:H:i', 'after:hora_apertura'],
             'dias_disponibles' => ['required', 'array', 'min:1'],
-            'dias_disponibles.*' => ['integer', 'between:0,6'],
+            'dias_disponibles.*' => ['integer', 'between:0,6', 'distinct'],
             'imagen' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ];
     }
@@ -49,6 +82,7 @@ class StoreCanchaRequest extends FormRequest
             'dias_disponibles.required' => 'Selecciona al menos un día disponible.',
             'dias_disponibles.min' => 'Debes seleccionar como mínimo un día de la semana.',
             'dias_disponibles.*.between' => 'Los días seleccionados no son válidos.',
+            'dias_disponibles.*.distinct' => 'No repitas días de la semana.',
             'imagen.image' => 'El archivo seleccionado debe ser una imagen.',
             'imagen.mimes' => 'La imagen debe estar en formato JPG, JPEG, PNG o WEBP.',
             'imagen.max' => 'La imagen es muy pesada. El tamaño máximo permitido es 2 MB.',

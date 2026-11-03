@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Actions\Cancha;
+namespace App\Cancha\Actions;
 
-use App\Models\Cancha;
+use App\Cancha\Models\Cancha;
+use App\Cancha\Support\CanchaImagen;
 use Illuminate\Validation\ValidationException;
 
 class DeleteCancha
@@ -20,7 +21,10 @@ class DeleteCancha
             ]);
         }
 
-        $cancha->eliminarImagenFisica();
+        $rutaImagen = $cancha->getRawOriginal('imagen_url');
+
         $cancha->delete();
+
+        CanchaImagen::deleteIfCustom($rutaImagen);
     }
 }

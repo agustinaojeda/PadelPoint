@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Cancha\DeleteCancha;
-use App\Models\Cancha;
+use App\Cancha\Actions\DeleteCancha;
+use App\Cancha\Models\Cancha;
+use App\Cancha\Queries\GetCanchasParaPurgar;
 use Illuminate\Console\Command;
 
 class PurgeDesactivadasCanchas extends Command
@@ -17,14 +18,9 @@ class PurgeDesactivadasCanchas extends Command
         parent::__construct();
     }
 
-    public function handle(): int
+    public function handle(GetCanchasParaPurgar $getCanchasParaPurgar): int
     {
-        $canchas = Cancha::query()
-            ->where('esta_disponible', false)
-            ->whereNotNull('desactivada_en')
-            ->where('desactivada_en', '<=', now()->subDays(30))
-            ->doesntHave('reservas')
-            ->get();
+        $canchas = $getCanchasParaPurgar();
 
         if ($canchas->isEmpty()) {
             $this->info('No hay canchas para eliminar.');

@@ -2,7 +2,7 @@
 
 namespace App\Reserva\Queries;
 
-use App\Models\Cancha;
+use App\Cancha\Models\Cancha;
 use App\Reserva\Models\Reserva;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;

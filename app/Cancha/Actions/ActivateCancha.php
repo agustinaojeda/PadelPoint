@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Actions\Cancha;
+namespace App\Cancha\Actions;
 
-use App\Models\Cancha;
+use App\Cancha\Models\Cancha;
 
 class ActivateCancha
 {

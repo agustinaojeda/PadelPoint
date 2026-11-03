@@ -2,7 +2,7 @@
 
 namespace App\Reserva\Actions;
 
-use App\Models\Cancha;
+use App\Cancha\Models\Cancha;
 use App\Reserva\Enums\EstadoReserva;
 use App\Reserva\Models\Reserva;
 use App\Reserva\Queries\GetSlotsCancha;
