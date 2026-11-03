@@ -25,6 +25,7 @@ class Reserva extends Model
         'hora_inicio',
         'hora_fin',
         'nombre_cliente',
+        'email_cliente',
         'telefono_cliente',
         'monto_total',
         'estado',

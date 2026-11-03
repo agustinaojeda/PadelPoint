@@ -12,7 +12,10 @@ use Illuminate\Validation\ValidationException;
 
 class CreateReserva
 {
-    public function __construct(private ExisteSolapamientoReserva $existeSolapamiento) {}
+    public function __construct(
+        private ExisteSolapamientoReserva $existeSolapamiento,
+        private EnviarConfirmacionReserva $enviarConfirmacion,
+    ) {}
 
     /**
      * Registra una reserva evitando solapamientos incluso bajo concurrencia.
@@ -23,7 +26,7 @@ class CreateReserva
      */
     public function __invoke(array $data, EstadoReserva $estado = EstadoReserva::Confirmada): Reserva
     {
-        return DB::transaction(function () use ($data, $estado) {
+        $reserva = DB::transaction(function () use ($data, $estado) {
             $cancha = Cancha::query()
                 ->lockForUpdate()
                 ->findOrFail($data['cancha_id']);
@@ -58,5 +61,11 @@ class CreateReserva
                 'estado' => $estado,
             ]);
         });
+
+        if ($estado === EstadoReserva::Confirmada) {
+            ($this->enviarConfirmacion)($reserva);
+        }
+
+        return $reserva;
     }
 }

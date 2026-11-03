@@ -9,7 +9,8 @@ export interface Reserva {
     hora_inicio: string;
     hora_fin: string;
     nombre_cliente: string;
-    telefono_cliente: string;
+    email_cliente: string | null;
+    telefono_cliente: string | null;
     monto_total: number;
     estado: EstadoReserva;
     observaciones: string | null;
@@ -31,7 +32,8 @@ export interface FormReservaData {
     hora_inicio: string;
     hora_fin: string;
     nombre_cliente: string;
-    telefono_cliente: string;
+    email_cliente: string | null;
+    telefono_cliente: string | null;
     monto_total: number;
     observaciones?: string;
 }

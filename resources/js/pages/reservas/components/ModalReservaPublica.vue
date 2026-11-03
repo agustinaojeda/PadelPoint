@@ -28,6 +28,7 @@ const form = useForm({
     fecha_turno: '',
     hora_inicio: '',
     nombre_cliente: '',
+    email_cliente: '',
     telefono_cliente: '',
     observaciones: '',
 });
@@ -109,7 +110,22 @@ const submit = () => {
             </div>
 
             <div>
-                <Label for="telefono_cliente" class="mb-1 block text-xs font-semibold text-slate-700">Teléfono / WhatsApp *</Label>
+                <Label for="email_cliente" class="mb-1 block text-xs font-semibold text-slate-700">Correo electrónico *</Label>
+                <Input
+                    id="email_cliente"
+                    v-model="form.email_cliente"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="Ej. juan@correo.com"
+                    class="rounded-xl border-slate-200 bg-white text-sm text-slate-900 focus-visible:ring-lime-200"
+                    :disabled="form.processing"
+                    required
+                />
+                <InputError :message="form.errors.email_cliente" class="mt-1" />
+            </div>
+
+            <div>
+                <Label for="telefono_cliente" class="mb-1 block text-xs font-semibold text-slate-700">Teléfono / WhatsApp (opcional)</Label>
                 <Input
                     id="telefono_cliente"
                     v-model="form.telefono_cliente"

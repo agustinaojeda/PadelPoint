@@ -108,6 +108,12 @@ return [
     |
     */
 
+    'markdown' => [
+        'theme' => env('MAIL_MARKDOWN_THEME', 'padelpoint'),
+        'paths' => [resource_path('views/vendor/mail')],
+        'extensions' => [],
+    ],
+
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),

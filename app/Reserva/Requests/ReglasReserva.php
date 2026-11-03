@@ -16,7 +16,8 @@ trait ReglasReserva
             'fecha_turno' => ['required', 'date'],
             'hora_inicio' => ['required', 'date_format:H:i'],
             'nombre_cliente' => ['required', 'string', 'max:255'],
-            'telefono_cliente' => ['required', 'string', 'max:50'],
+            'email_cliente' => ['nullable', 'email', 'max:255'],
+            'telefono_cliente' => ['nullable', 'string', 'max:50'],
             'observaciones' => ['nullable', 'string'],
         ];
     }
@@ -35,7 +36,7 @@ trait ReglasReserva
             'hora_inicio.required' => 'Seleccioná un horario.',
             'hora_inicio.date_format' => 'El horario seleccionado no es válido.',
             'nombre_cliente.required' => 'Ingresá el nombre del cliente.',
-            'telefono_cliente.required' => 'Ingresá un teléfono de contacto.',
+            'email_cliente.email' => 'Ingresá un correo electrónico válido.',
         ];
     }
 }

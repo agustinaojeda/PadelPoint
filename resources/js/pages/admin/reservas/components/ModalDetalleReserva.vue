@@ -6,7 +6,7 @@ import { formatHora, formatPrecio, formatearFecha, whatsappUrl } from '@/lib/for
 import { ESTADOS_RESERVA } from '@/lib/reservas';
 import type { EstadoReserva, Reserva } from '@/types';
 import { useForm } from '@inertiajs/vue3';
-import { Calendar, Clock, DollarSign, FileText, Phone, Trash2, User } from 'lucide-vue-next';
+import { Calendar, Clock, DollarSign, FileText, Mail, Phone, Trash2, User } from 'lucide-vue-next';
 
 const props = defineProps<{
     open: boolean;
@@ -73,10 +73,24 @@ const cancelarReserva = () => {
                 </div>
 
                 <div class="flex items-center justify-between">
+                    <span class="flex items-center gap-1.5 text-xs text-muted-foreground"> <Mail class="h-3.5 w-3.5" /> Correo: </span>
+                    <a v-if="reserva.email_cliente" :href="`mailto:${reserva.email_cliente}`" class="font-medium text-primary hover:underline">
+                        {{ reserva.email_cliente }}
+                    </a>
+                    <span v-else class="font-medium text-muted-foreground">—</span>
+                </div>
+
+                <div class="flex items-center justify-between">
                     <span class="flex items-center gap-1.5 text-xs text-muted-foreground"> <Phone class="h-3.5 w-3.5" /> Teléfono / WhatsApp: </span>
-                    <a :href="whatsappUrl(reserva.telefono_cliente)" target="_blank" class="font-medium text-primary hover:underline">
+                    <a
+                        v-if="reserva.telefono_cliente"
+                        :href="whatsappUrl(reserva.telefono_cliente)"
+                        target="_blank"
+                        class="font-medium text-primary hover:underline"
+                    >
                         {{ reserva.telefono_cliente }}
                     </a>
+                    <span v-else class="font-medium text-muted-foreground">—</span>
                 </div>
 
                 <div class="flex items-center justify-between">

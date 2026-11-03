@@ -27,6 +27,7 @@ class ReservaFactory extends Factory
             'hora_inicio' => $horaInicio,
             'hora_fin' => date('H:i', strtotime($horaInicio.' +90 minutes')),
             'nombre_cliente' => fake()->name(),
+            'email_cliente' => fake()->safeEmail(),
             'telefono_cliente' => fake()->numerify('##########'),
             'monto_total' => fake()->randomFloat(2, 5000, 20000),
             'estado' => EstadoReserva::Confirmada,

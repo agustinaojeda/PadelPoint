@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Cancha, FormReservaData, SlotTurno } from '@/types';
+import type { Cancha, SlotTurno } from '@/types';
 import { useForm } from '@inertiajs/vue3';
-import { Calendar, Clock, DollarSign, FileText, Phone, User } from 'lucide-vue-next';
+import { Calendar, Clock, DollarSign, FileText, Mail, Phone, User } from 'lucide-vue-next';
 import { watch } from 'vue';
 
 const props = defineProps<{
@@ -22,12 +22,13 @@ const emit = defineEmits<{
     (e: 'success'): void;
 }>();
 
-const form = useForm<FormReservaData>({
-    cancha_id: null,
+const form = useForm({
+    cancha_id: null as number | null,
     fecha_turno: '',
     hora_inicio: '',
     hora_fin: '',
     nombre_cliente: '',
+    email_cliente: '',
     telefono_cliente: '',
     monto_total: 0,
     observaciones: '',
@@ -52,7 +53,7 @@ const submit = () => {
     form.post(route('admin.reservas.store'), {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset('nombre_cliente', 'telefono_cliente', 'observaciones');
+            form.reset('nombre_cliente', 'email_cliente', 'telefono_cliente', 'observaciones');
             emit('close');
             emit('success');
         },
@@ -108,18 +109,20 @@ const cerrarModal = () => {
             </div>
 
             <div>
+                <Label for="email_cliente" class="mb-1 flex items-center gap-1.5 text-xs font-medium">
+                    <Mail class="h-3.5 w-3.5 text-muted-foreground" />
+                    Correo electrónico (Opcional)
+                </Label>
+                <Input id="email_cliente" v-model="form.email_cliente" type="email" placeholder="Ej. juan@correo.com" :disabled="form.processing" />
+                <InputError :message="form.errors.email_cliente" class="mt-1" />
+            </div>
+
+            <div>
                 <Label for="telefono_cliente" class="mb-1 flex items-center gap-1.5 text-xs font-medium">
                     <Phone class="h-3.5 w-3.5 text-muted-foreground" />
-                    Teléfono / WhatsApp *
+                    Teléfono / WhatsApp (Opcional)
                 </Label>
-                <Input
-                    id="telefono_cliente"
-                    v-model="form.telefono_cliente"
-                    type="text"
-                    placeholder="Ej. 2664123456"
-                    :disabled="form.processing"
-                    required
-                />
+                <Input id="telefono_cliente" v-model="form.telefono_cliente" type="text" placeholder="Ej. 2664123456" :disabled="form.processing" />
                 <InputError :message="form.errors.telefono_cliente" class="mt-1" />
             </div>
 

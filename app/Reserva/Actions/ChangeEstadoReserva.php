@@ -8,6 +8,8 @@ use Illuminate\Validation\ValidationException;
 
 class ChangeEstadoReserva
 {
+    public function __construct(private EnviarConfirmacionReserva $enviarConfirmacion) {}
+
     /**
      * Cambia el estado de una reserva respetando las transiciones permitidas.
      *
@@ -26,6 +28,10 @@ class ChangeEstadoReserva
         }
 
         $reserva->update(['estado' => $estado]);
+
+        if ($estado === EstadoReserva::Confirmada) {
+            ($this->enviarConfirmacion)($reserva);
+        }
 
         return $reserva;
     }

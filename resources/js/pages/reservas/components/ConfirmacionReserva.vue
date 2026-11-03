@@ -28,7 +28,7 @@ defineEmits<{
                     <span class="capitalize">{{ formatearFechaLarga(reserva.fecha) }}</span>
                     · {{ formatHora(reserva.hora_inicio) }} a {{ formatHora(reserva.hora_fin) }} hs
                 </p>
-                <p class="mt-1 text-xs text-slate-500">Te contactaremos al teléfono indicado para confirmar el turno.</p>
+                <p class="mt-1 text-xs text-slate-500">Revisá tu correo: te avisaremos cuando el turno quede confirmado.</p>
             </div>
         </div>
 
