@@ -1,9 +1,9 @@
 <?php
 
-use App\Enums\EstadoReserva;
 use App\Models\Admin;
 use App\Models\Cancha;
-use App\Models\Reserva;
+use App\Reserva\Enums\EstadoReserva;
+use App\Reserva\Models\Reserva;
 
 function adminAutenticado(): Admin
 {
@@ -11,21 +11,21 @@ function adminAutenticado(): Admin
 }
 
 test('guests cannot access canchas', function () {
-    $this->get('/canchas')->assertRedirect('/login');
+    $this->get('/admin/canchas')->assertRedirect('/login');
 });
 
 test('authenticated admin can list canchas', function () {
     Cancha::factory()->count(2)->create();
 
     $this->actingAs(adminAutenticado())
-        ->get('/canchas')
+        ->get('/admin/canchas')
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->component('canchas/index'));
+        ->assertInertia(fn ($page) => $page->component('admin/canchas/index'));
 });
 
 test('authenticated admin can create a cancha', function () {
     $this->actingAs(adminAutenticado())
-        ->post('/canchas', [
+        ->post('/admin/canchas', [
             'nombre' => 'Cancha Central',
             'superficie' => 'Césped sintético',
             'es_techada' => true,
@@ -49,7 +49,7 @@ test('authenticated admin can update a cancha', function () {
     $cancha = Cancha::factory()->create();
 
     $this->actingAs(adminAutenticado())
-        ->put("/canchas/{$cancha->id}", [
+        ->put("/admin/canchas/{$cancha->id}", [
             'nombre' => 'Cancha Renombrada',
             'superficie' => 'Cemento',
             'es_techada' => false,
@@ -69,13 +69,13 @@ test('admin can deactivate and reactivate a cancha', function () {
     $cancha = Cancha::factory()->create();
     $admin = adminAutenticado();
 
-    $this->actingAs($admin)->delete("/canchas/{$cancha->id}")->assertRedirect();
+    $this->actingAs($admin)->delete("/admin/canchas/{$cancha->id}")->assertRedirect();
 
     expect($cancha->fresh())
         ->esta_disponible->toBeFalse()
         ->desactivada_en->not->toBeNull();
 
-    $this->actingAs($admin)->patch("/canchas/{$cancha->id}/activar")->assertRedirect();
+    $this->actingAs($admin)->patch("/admin/canchas/{$cancha->id}/activar")->assertRedirect();
 
     expect($cancha->fresh())
         ->esta_disponible->toBeTrue()
@@ -87,7 +87,7 @@ test('a cancha with reservas cannot be permanently deleted', function () {
     Reserva::factory()->create(['cancha_id' => $cancha->id]);
 
     $this->actingAs(adminAutenticado())
-        ->delete("/canchas/{$cancha->id}/eliminar")
+        ->delete("/admin/canchas/{$cancha->id}/eliminar")
         ->assertSessionHasErrors('cancha');
 
     $this->assertDatabaseHas('canchas', ['id' => $cancha->id]);
@@ -97,7 +97,7 @@ test('a cancha without reservas can be permanently deleted', function () {
     $cancha = Cancha::factory()->create();
 
     $this->actingAs(adminAutenticado())
-        ->delete("/canchas/{$cancha->id}/eliminar")
+        ->delete("/admin/canchas/{$cancha->id}/eliminar")
         ->assertRedirect();
 
     $this->assertDatabaseMissing('canchas', ['id' => $cancha->id]);

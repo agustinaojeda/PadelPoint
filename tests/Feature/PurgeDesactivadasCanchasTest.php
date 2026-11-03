@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Cancha;
-use App\Models\Reserva;
+use App\Reserva\Models\Reserva;
 
 test('the purge command deletes old deactivated canchas without reservas', function () {
     $cancha = Cancha::factory()->create([

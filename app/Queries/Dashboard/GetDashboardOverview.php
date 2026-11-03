@@ -2,9 +2,8 @@
 
 namespace App\Queries\Dashboard;
 
-use App\Enums\EstadoReserva;
 use App\Models\Cancha;
-use App\Models\Reserva;
+use App\Reserva\Models\Reserva;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -30,14 +29,14 @@ class GetDashboardOverview
                 'reservas_hoy' => (int) $metricasHoy->total_reservas,
                 'ingresos_mes' => (float) $metricasMes->total_ingresos,
                 'reservas_mes' => (int) $metricasMes->total_reservas,
-                'total_canchas' => Cancha::query()->where('esta_disponible', true)->count(),
+                'total_canchas' => Cancha::query()->disponibles()->count(),
             ],
             'franjasHorarias' => $this->franjasHorarias($inicioMes, $finMes, (int) $metricasMes->total_reservas),
             'ocupacionDias' => $this->ocupacionPorDia($inicioMes, $finMes, (int) $metricasMes->total_reservas),
             'proximasReservas' => Reserva::query()
                 ->with('cancha')
-                ->where('fecha_turno', $hoy)
-                ->confirmadasOCompletadas()
+                ->delDia($hoy)
+                ->activas()
                 ->orderBy('hora_inicio')
                 ->take(6)
                 ->get(),
@@ -143,7 +142,7 @@ class GetDashboardOverview
     private function canchasResumen(string $inicioMes, string $finMes): Collection
     {
         return Cancha::query()
-            ->where('esta_disponible', true)
+            ->disponibles()
             ->withCount(['reservas as reservas_mes' => fn ($query) => $query
                 ->confirmadasOCompletadas()
                 ->enRangoFechas($inicioMes, $finMes)])
@@ -178,7 +177,7 @@ class GetDashboardOverview
         $ingresosPorMes = Reserva::query()
             ->selectRaw("{$expresionMes} as mes, SUM(monto_total) as total")
             ->whereYear('fecha_turno', $anio)
-            ->whereIn('estado', [EstadoReserva::Confirmada->value, EstadoReserva::Completada->value])
+            ->confirmadasOCompletadas()
             ->groupBy('mes')
             ->pluck('total', 'mes')
             ->mapWithKeys(fn (mixed $total, mixed $mes): array => [(int) $mes => (float) $total]);

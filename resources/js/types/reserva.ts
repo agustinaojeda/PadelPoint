@@ -35,3 +35,20 @@ export interface FormReservaData {
     monto_total: number;
     observaciones?: string;
 }
+
+export interface SlotPublico {
+    hora_inicio: string;
+    hora_fin: string;
+    disponible: boolean;
+}
+
+export interface CanchaConSlots extends Cancha {
+    slots: SlotPublico[];
+}
+
+export interface ReservaConfirmada {
+    cancha: string;
+    fecha: string;
+    hora_inicio: string;
+    hora_fin: string;
+}

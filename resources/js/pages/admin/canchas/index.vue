@@ -1,0 +1,136 @@
+<script setup lang="ts">
+import EmptyState from '@/components/shared/EmptyState.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import AppLayout from '@/layouts/AppLayout.vue';
+import type { BreadcrumbItem, Cancha } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import { Search } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+
+import CanchaCard from './components/CanchaCard.vue';
+import CanchaFormModal from './components/CanchaFormModal.vue';
+
+import { useScrollInfinito } from '@/composables/useScrollInfinito';
+
+interface CanchasPaginadas {
+    data: Cancha[];
+    current_page: number;
+    next_page_url: string | null;
+}
+
+const props = defineProps<{
+    canchas: CanchasPaginadas;
+}>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    { title: 'Dashboard', href: route('admin.dashboard') },
+    { title: 'Canchas', href: route('admin.canchas.index') },
+];
+
+const { items: listaCanchas, cargando, triggerScroll } = useScrollInfinito(() => props.canchas, 'canchas');
+
+const busqueda = ref('');
+
+const canchasFiltradas = computed(() => {
+    if (!busqueda.value.trim()) return listaCanchas.value;
+    const query = busqueda.value.toLowerCase().trim();
+    return listaCanchas.value.filter(
+        (cancha) => cancha.nombre.toLowerCase().includes(query) || (cancha.descripcion && cancha.descripcion.toLowerCase().includes(query)),
+    );
+});
+
+const showModal = ref(false);
+const canchaSeleccionada = ref<Cancha | null>(null);
+
+const abrirCrearModal = () => {
+    canchaSeleccionada.value = null;
+    showModal.value = true;
+};
+
+const abrirEditarModal = (cancha: Cancha) => {
+    canchaSeleccionada.value = JSON.parse(JSON.stringify(cancha));
+    showModal.value = true;
+};
+
+const cerrarModal = () => {
+    showModal.value = false;
+    canchaSeleccionada.value = null;
+};
+
+const desactivarCancha = (id: number) => {
+    if (confirm('¿Seguro que deseas desactivar esta cancha? Pasará a estar inactiva para nuevas reservas.')) {
+        router.delete(route('admin.canchas.destroy', { cancha: id }), { preserveScroll: true });
+    }
+};
+
+const activarCancha = (cancha: Cancha) => {
+    router.patch(route('admin.canchas.activar', { cancha: cancha.id }), {}, { preserveScroll: true });
+};
+
+const eliminarCancha = (cancha: Cancha) => {
+    if (confirm('¿Seguro que deseas eliminar definitivamente esta cancha? Esta acción no se puede deshacer.')) {
+        router.delete(route('admin.canchas.eliminar', { cancha: cancha.id }), { preserveScroll: true });
+    }
+};
+</script>
+
+<template>
+    <Head title="Canchas" />
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div class="mb-6 flex w-full flex-col items-start justify-between gap-4 text-left sm:flex-row sm:items-center">
+                <div class="text-left">
+                    <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestión de Canchas</h1>
+                    <p class="mt-1 text-muted-foreground">Administra las instalaciones del complejo.</p>
+                </div>
+                <Button @click="abrirCrearModal">+ Nueva Cancha</Button>
+            </div>
+
+            <div v-if="listaCanchas.length > 0" class="mb-8 max-w-md">
+                <div class="relative">
+                    <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input v-model="busqueda" type="text" placeholder="Buscar cancha por nombre..." class="pl-9" />
+                </div>
+            </div>
+
+            <!--lista de canchas -->
+            <template v-if="canchasFiltradas.length > 0">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <CanchaCard
+                        v-for="cancha in canchasFiltradas"
+                        :key="cancha.id"
+                        :cancha="cancha"
+                        @edit="abrirEditarModal"
+                        @delete="desactivarCancha"
+                        @activar="activarCancha"
+                        @eliminar="eliminarCancha"
+                    />
+                </div>
+
+                <div ref="triggerScroll" class="py-8 text-center">
+                    <div v-if="cargando" class="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                        <span class="h-4 w-4 animate-spin rounded-full border-b-2 border-primary"></span>
+                        Cargando más canchas...
+                    </div>
+                    <p v-else-if="!canchas.next_page_url" class="text-sm text-muted-foreground">No hay más canchas para mostrar.</p>
+                </div>
+            </template>
+
+            <EmptyState
+                v-else-if="listaCanchas.length > 0"
+                titulo="Sin resultados"
+                :descripcion="`No se encontraron canchas que coincidan con '${busqueda}'.`"
+                class="rounded-xl bg-card px-4 py-12"
+            >
+                <Button variant="ghost" class="mt-2" @click="busqueda = ''">Limpiar búsqueda</Button>
+            </EmptyState>
+
+            <EmptyState v-else titulo="¡Aún no hay canchas!" class="rounded-xl bg-card px-4 py-16 shadow-sm">
+                <Button variant="outline" class="mt-4" @click="abrirCrearModal"> Crear primera cancha </Button>
+            </EmptyState>
+        </div>
+
+        <CanchaFormModal :open="showModal" :cancha="canchaSeleccionada" @close="cerrarModal" />
+    </AppLayout>
+</template>

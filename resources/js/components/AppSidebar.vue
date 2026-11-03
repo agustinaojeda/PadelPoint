@@ -11,17 +11,17 @@ import AppLogo from './AppLogo.vue';
 const mainNavItems: NavItem[] = [
     {
         title: 'Panel de Control',
-        href: route('dashboard', undefined, false),
+        href: route('admin.dashboard', undefined, false),
         icon: LayoutGrid,
     },
     {
         title: 'Canchas',
-        href: route('canchas.index', undefined, false),
+        href: route('admin.canchas.index', undefined, false),
         icon: LandPlot,
     },
     {
         title: 'Reservas',
-        href: route('reservas.index', undefined, false),
+        href: route('admin.reservas.index', undefined, false),
         icon: CalendarIcon,
     },
 ];
@@ -35,7 +35,7 @@ const footerNavItems: NavItem[] = [];
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
+                        <Link :href="route('admin.dashboard')">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

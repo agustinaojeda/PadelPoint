@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,12 +26,12 @@ class ConfirmablePasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        /** @var \App\Models\Admin $admin */
+        /** @var Admin $admin */
         $admin = $request->user();
 
         if (! Auth::guard('web')->validate([
-            'correoAdmin' => $admin->correoAdmin, 
-            'password' => $request->password,   
+            'correoAdmin' => $admin->correoAdmin,
+            'password' => $request->password,
         ])) {
             throw ValidationException::withMessages([
                 'password' => __('auth.password'),
@@ -39,6 +40,6 @@ class ConfirmablePasswordController extends Controller
 
         $request->session()->put('auth.password_confirmed_at', time());
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('admin.dashboard', absolute: false));
     }
 }

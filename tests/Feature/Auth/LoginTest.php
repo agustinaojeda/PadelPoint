@@ -2,14 +2,19 @@
 
 use App\Models\Admin;
 
-test('guests are redirected from the root to the login page', function () {
-    $this->get('/')->assertRedirect('/login');
+test('guests can see the home page', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('home/index'));
 });
 
-test('authenticated admins are redirected from the root to the dashboard', function () {
+test('authenticated admins can see the home page', function () {
     $admin = Admin::factory()->create();
 
-    $this->actingAs($admin)->get('/')->assertRedirect('/dashboard');
+    $this->actingAs($admin)
+        ->get('/')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('home/index'));
 });
 
 test('admin can log in with valid credentials', function () {
@@ -21,7 +26,7 @@ test('admin can log in with valid credentials', function () {
     $this->post('/login', [
         'correoAdmin' => 'admin@padelpoint.com',
         'contrasenaAdmin' => 'secret-password',
-    ])->assertRedirect('/dashboard');
+    ])->assertRedirect('/admin/dashboard');
 
     $this->assertAuthenticatedAs($admin);
 });

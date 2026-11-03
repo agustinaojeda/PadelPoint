@@ -81,7 +81,7 @@ export function useCanchaForm(props: { open: boolean; cancha?: Cancha | null }, 
                     ...data,
                     dias_disponibles: payloadDias,
                     _method: 'PUT',
-                })).post(route('canchas.update', { cancha: props.cancha.id }), {
+                })).post(route('admin.canchas.update', { cancha: props.cancha.id }), {
                     preserveScroll: true,
                     onSuccess: () => emit('close'),
                 });
@@ -89,7 +89,7 @@ export function useCanchaForm(props: { open: boolean; cancha?: Cancha | null }, 
                 form.transform((data) => ({
                     ...data,
                     dias_disponibles: payloadDias,
-                })).put(route('canchas.update', { cancha: props.cancha.id }), {
+                })).put(route('admin.canchas.update', { cancha: props.cancha.id }), {
                     preserveScroll: true,
                     onSuccess: () => emit('close'),
                 });
@@ -98,7 +98,7 @@ export function useCanchaForm(props: { open: boolean; cancha?: Cancha | null }, 
             form.transform((data) => ({
                 ...data,
                 dias_disponibles: payloadDias,
-            })).post(route('canchas.store'), {
+            })).post(route('admin.canchas.store'), {
                 preserveScroll: true,
                 onSuccess: () => emit('close'),
             });

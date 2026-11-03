@@ -10,6 +10,6 @@ class DashboardController extends Controller
 {
     public function __invoke(GetDashboardOverview $getDashboardOverview): Response
     {
-        return Inertia::render('dashboard/index', $getDashboardOverview());
+        return Inertia::render('admin/dashboard/index', $getDashboardOverview());
     }
 }

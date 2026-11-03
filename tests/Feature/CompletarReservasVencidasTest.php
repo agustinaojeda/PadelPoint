@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\EstadoReserva;
-use App\Models\Reserva;
+use App\Reserva\Enums\EstadoReserva;
+use App\Reserva\Models\Reserva;
 
 test('the command completes expired confirmed reservas', function () {
     $vencida = Reserva::factory()->create([

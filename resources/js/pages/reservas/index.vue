@@ -1,60 +1,34 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import { generarSlotsCancha } from '@/lib/turnos';
-import type { BreadcrumbItem, Cancha, Reserva, SlotTurno } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
-import { Calendar as CalendarIcon } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import EmptyState from '@/components/shared/EmptyState.vue';
+import { useFechaReservas } from '@/composables/useFechaReservas';
+import PublicLayout from '@/layouts/PublicLayout.vue';
+import type { CanchaConSlots, ReservaConfirmada, SlotPublico } from '@/types';
+import { Head } from '@inertiajs/vue3';
+import { CalendarX } from 'lucide-vue-next';
+import { nextTick, ref } from 'vue';
 
-import CanchaGrillaCard from './components/CanchaGrillaCard.vue';
-import FiltroFecha from './components/FiltroFecha.vue';
-import ModalDetalleReserva from './components/ModalDetalleReserva.vue';
-import ModalReserva from './components/ModalReserva.vue';
+import CanchaDisponibleCard from './components/CanchaDisponibleCard.vue';
+import ConfirmacionReserva from './components/ConfirmacionReserva.vue';
+import ModalReservaPublica from './components/ModalReservaPublica.vue';
+import SelectorFechaReservas from './components/SelectorFechaReservas.vue';
 
 const props = defineProps<{
-    canchas: Cancha[];
-    reservas: Reserva[];
+    canchas: CanchaConSlots[];
     fechaSeleccionada: string;
+    canchaDestacada: number | null;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Dashboard', href: route('dashboard') },
-    { title: 'Reservas', href: route('reservas.index') },
-];
+const { fecha, cambiarFecha } = useFechaReservas(() => props.fechaSeleccionada, route('reservas.index'));
 
-const fecha = ref(props.fechaSeleccionada);
-const reservaParaDetalle = ref<Reserva | null>(null);
-const modalDetalleAbierto = ref(false);
+const turnoSeleccionado = ref<{ cancha: CanchaConSlots; slot: SlotPublico } | null>(null);
 const modalAbierto = ref(false);
-const turnoSeleccionado = ref<{ cancha: Cancha; slot: SlotTurno } | null>(null);
+const reservaConfirmada = ref<ReservaConfirmada | null>(null);
 
-const cambiarFecha = (nuevaFecha: string) => {
-    fecha.value = nuevaFecha;
-    router.get(route('reservas.index'), { fecha: nuevaFecha }, { preserveState: true, replace: true });
-};
+const abrirReserva = (cancha: CanchaConSlots, slot: SlotPublico) => {
+    if (!slot.disponible) {
+        return;
+    }
 
-const mapaCanchasSlots = computed(() => {
-    const [year, month, day] = fecha.value.split('-').map(Number);
-    const fechaObj = new Date(year, month - 1, day);
-    const diaSemana = fechaObj.getDay();
-
-    const canchasDisponiblesHoy = props.canchas.filter((cancha) => {
-        return Array.isArray(cancha.dias_disponibles) && cancha.dias_disponibles.includes(diaSemana);
-    });
-
-    return canchasDisponiblesHoy.map((cancha) => ({
-        cancha,
-        slots: generarSlotsCancha(cancha, props.reservas),
-    }));
-});
-
-const verDetalleReserva = (reserva?: Reserva) => {
-    if (!reserva) return;
-    reservaParaDetalle.value = reserva;
-    modalDetalleAbierto.value = true;
-};
-
-const abrirModalNuevaReserva = (cancha: Cancha, slot: SlotTurno) => {
     turnoSeleccionado.value = { cancha, slot };
     modalAbierto.value = true;
 };
@@ -63,62 +37,78 @@ const cerrarModal = () => {
     modalAbierto.value = false;
     turnoSeleccionado.value = null;
 };
+
+const confirmarReserva = (reserva: ReservaConfirmada) => {
+    reservaConfirmada.value = reserva;
+    cerrarModal();
+
+    nextTick(() => {
+        document.getElementById('confirmacion')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+};
 </script>
 
 <template>
-    <Head title="Gestión de Reservas" />
+    <Head title="Reservar turno" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestión de Reservas</h1>
-                    <p class="mt-1 text-muted-foreground">Planificación de turnos y disponibilidad por cancha.</p>
-                </div>
+    <PublicLayout>
+        <section class="relative overflow-hidden bg-teal-950 pb-16 pt-28 text-white md:pt-32">
+            <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-lime-400/20 blur-3xl"></div>
+            <div class="pointer-events-none absolute -bottom-32 -left-24 h-72 w-72 rounded-full bg-teal-500/30 blur-3xl"></div>
 
-                <FiltroFecha :fecha="fecha" @cambiar="cambiarFecha" />
+            <div class="relative mx-auto max-w-6xl px-6 md:px-12">
+                <p class="text-xs font-bold uppercase tracking-[0.3em] text-lime-400">Reservas online</p>
+                <h1 class="mt-3 text-3xl font-extrabold leading-tight tracking-tight md:text-5xl">Elegí tu cancha y tu horario</h1>
+                <p class="mt-4 max-w-2xl text-sm leading-relaxed text-teal-100/80 md:text-base">
+                    Consultá la disponibilidad actualizada, seleccioná un turno y completá tus datos. No necesitás crear una cuenta.
+                </p>
+
+                <SelectorFechaReservas :fecha="fecha" @cambiar="cambiarFecha" />
             </div>
+        </section>
 
-            <div class="space-y-6 pt-6">
-                <div v-if="canchas.length === 0" class="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center">
-                    <CalendarIcon class="h-12 w-12 text-muted-foreground/50" />
-                    <h3 class="mt-4 text-lg font-semibold">No hay canchas disponibles</h3>
-                    <p class="mb-4 text-sm text-muted-foreground">Primero debes registrar e habilitar canchas para comenzar a recibir reservas.</p>
+        <section class="mx-auto max-w-6xl px-6 py-12 md:px-12">
+            <ConfirmacionReserva v-if="reservaConfirmada" :reserva="reservaConfirmada" @close="reservaConfirmada = null" />
+
+            <EmptyState
+                v-if="canchas.length === 0"
+                titulo="No hay turnos para esta fecha"
+                descripcion="Ninguna cancha atiende el día seleccionado. Probá con otra fecha."
+                class="mx-auto max-w-lg rounded-3xl border-slate-300 bg-white p-10"
+            >
+                <template #icon>
+                    <div class="mb-4 rounded-full bg-slate-100 p-4 text-slate-500">
+                        <CalendarX class="h-10 w-10" />
+                    </div>
+                </template>
+            </EmptyState>
+
+            <div v-else class="space-y-6">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <h2 class="text-2xl font-extrabold text-slate-900">Canchas disponibles</h2>
+                    <p class="text-xs text-slate-500">Los horarios tachados ya están reservados.</p>
                 </div>
 
-                <div
-                    v-else-if="mapaCanchasSlots.length === 0"
-                    class="flex flex-col items-center justify-center rounded-lg border border-dashed p-12 text-center"
-                >
-                    <CalendarIcon class="h-12 w-12 text-muted-foreground/50" />
-                    <h3 class="mt-4 text-lg font-semibold">No hay canchas operativas para esta fecha</h3>
-                    <p class="mb-4 text-sm text-muted-foreground">
-                        Ninguna cancha atiende el día de la semana correspondiente a la fecha seleccionada.
-                    </p>
-                </div>
-
-                <!--listado de canchas-->
-                <div v-else class="flex flex-wrap gap-6">
-                    <CanchaGrillaCard
-                        v-for="{ cancha, slots } in mapaCanchasSlots"
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <CanchaDisponibleCard
+                        v-for="cancha in canchas"
+                        :id="`cancha-${cancha.id}`"
                         :key="cancha.id"
                         :cancha="cancha"
-                        :slots="slots"
-                        @reservar-slot="(slot) => abrirModalNuevaReserva(cancha, slot)"
-                        @ver-detalle-reserva="verDetalleReserva"
+                        :destacada="canchaDestacada === cancha.id"
+                        @reservar="abrirReserva"
                     />
                 </div>
             </div>
-        </div>
-    </AppLayout>
+        </section>
 
-    <ModalReserva
-        v-model:open="modalAbierto"
-        :cancha="turnoSeleccionado?.cancha ?? null"
-        :turno-slot="turnoSeleccionado?.slot ?? null"
-        :fecha="fecha"
-        @close="cerrarModal"
-    />
-
-    <ModalDetalleReserva v-model:open="modalDetalleAbierto" :reserva="reservaParaDetalle" @close="modalDetalleAbierto = false" />
+        <ModalReservaPublica
+            :open="modalAbierto"
+            :cancha="turnoSeleccionado?.cancha ?? null"
+            :turno="turnoSeleccionado?.slot ?? null"
+            :fecha="fecha"
+            @close="cerrarModal"
+            @success="confirmarReserva"
+        />
+    </PublicLayout>
 </template>

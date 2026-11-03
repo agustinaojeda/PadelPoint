@@ -1,5 +1,7 @@
 <?php
 
-test('guests are redirected from the root to the login page', function () {
-    $this->get('/')->assertRedirect('/login');
+test('guests can see the home page', function () {
+    $this->get('/')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('home/index'));
 });

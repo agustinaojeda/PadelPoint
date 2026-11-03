@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Reserva\Models\Reserva;
 use App\Support\CanchaImagen;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,6 +49,19 @@ class Cancha extends Model
     public function reservas(): HasMany
     {
         return $this->hasMany(Reserva::class);
+    }
+
+    public function scopeDisponibles(Builder $query): Builder
+    {
+        return $query->where('esta_disponible', true);
+    }
+
+    /**
+     * Indica si la cancha atiende el día de la semana indicado (0 = domingo).
+     */
+    public function atiendeDia(int $diaSemana): bool
+    {
+        return in_array($diaSemana, $this->dias_disponibles ?? [], true);
     }
 
     /**

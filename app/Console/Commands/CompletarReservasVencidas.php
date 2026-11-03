@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Reserva\CompleteExpiredReservas;
+use App\Reserva\Actions\CompleteExpiredReservas;
 use Illuminate\Console\Command;
 
 class CompletarReservasVencidas extends Command

@@ -34,7 +34,7 @@ class CanchaController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(9);
 
-        return Inertia::render('canchas/index', [
+        return Inertia::render('admin/canchas/index', [
             'canchas' => $canchas,
         ]);
     }

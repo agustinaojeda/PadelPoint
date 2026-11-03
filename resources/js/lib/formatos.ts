@@ -110,3 +110,12 @@ export const sanitizeWhatsAppPhone = (phone: string | null | undefined): string 
     if (!phone) return '';
     return phone.replace(/\D/g, '');
 };
+
+/**link de WhatsApp listo para usar en un href */
+export const whatsappUrl = (phone: string | null | undefined): string => `https://wa.me/${sanitizeWhatsAppPhone(phone)}`;
+
+/**imagen por defecto de una cancha */
+export const IMAGEN_CANCHA_DEFAULT = '/images/cancha-default.webp';
+
+/**resuelve la imagen de una cancha con su fallback */
+export const imagenCancha = (url: string | null | undefined): string => url || IMAGEN_CANCHA_DEFAULT;

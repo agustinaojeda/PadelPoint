@@ -2,18 +2,22 @@
 
 use App\Http\Controllers\CanchaController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ReservaController;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\HomeController;
+use App\Reserva\Controllers\AdminReservaController;
+use App\Reserva\Controllers\ReservaController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 
-Route::get('/', function () {
-    return redirect()->route(Auth::check() ? 'dashboard' : 'login');
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
-Route::middleware('auth')->group(function () {
+Route::controller(ReservaController::class)->group(function () {
+    Route::get('reservas', 'index')->name('reservas.index');
+    Route::post('reservas', 'store')->middleware('throttle:10,1')->name('reservas.store');
+});
+
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::controller(CanchaController::class)->group(function () {
@@ -25,7 +29,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('canchas/{cancha}/activar', 'activar')->name('canchas.activar');
     });
 
-    Route::controller(ReservaController::class)->group(function () {
+    Route::controller(AdminReservaController::class)->group(function () {
         Route::get('reservas', 'index')->name('reservas.index');
         Route::post('reservas', 'store')->name('reservas.store');
         Route::patch('reservas/{reserva}/estado', 'cambiarEstado')->name('reservas.cambiar-estado');

@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Enums\EstadoReserva;
 use App\Models\Cancha;
-use App\Models\Reserva;
+use App\Reserva\Enums\EstadoReserva;
+use App\Reserva\Models\Reserva;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
