@@ -168,7 +168,7 @@ test('updating a cancha replaces its image and deletes the old file', function (
     $cancha = Cancha::query()->firstOrFail();
     $rutaVieja = $cancha->getRawOriginal('imagen_url');
 
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $rutaVieja));
+    Storage::disk('public')->assertExists($rutaVieja);
 
     $this->actingAs($admin)->put("/admin/canchas/{$cancha->id}", [
         'nombre' => 'Cancha con Imagen',
@@ -184,14 +184,14 @@ test('updating a cancha replaces its image and deletes the old file', function (
     $rutaNueva = $cancha->fresh()->getRawOriginal('imagen_url');
 
     expect($rutaNueva)->not->toBe($rutaVieja);
-    Storage::disk('public')->assertMissing(str_replace('storage/', '', $rutaVieja));
-    Storage::disk('public')->assertExists(str_replace('storage/', '', $rutaNueva));
+    Storage::disk('public')->assertMissing($rutaVieja);
+    Storage::disk('public')->assertExists($rutaNueva);
 });
 
 test('permanently deleting a cancha removes its image from disk', function () {
     Storage::fake('public');
 
-    $cancha = Cancha::factory()->create(['imagen_url' => 'storage/canchas/vieja.png']);
+    $cancha = Cancha::factory()->create(['imagen_url' => 'canchas/vieja.png']);
     Storage::disk('public')->put('canchas/vieja.png', 'contenido');
 
     $this->actingAs(adminAutenticado())
@@ -232,7 +232,7 @@ test('cancha imagen_url falls back to the default image', function () {
 });
 
 test('cancha imagen_url returns an absolute url for a stored image', function () {
-    $cancha = Cancha::factory()->create(['imagen_url' => 'storage/canchas/foto.png']);
+    $cancha = Cancha::factory()->create(['imagen_url' => 'canchas/foto.png']);
 
     expect($cancha->imagen_url)->toBe(asset('storage/canchas/foto.png'));
 });

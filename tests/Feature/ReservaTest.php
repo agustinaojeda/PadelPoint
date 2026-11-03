@@ -3,7 +3,9 @@
 use App\Cancha\Models\Cancha;
 use App\Models\Admin;
 use App\Reserva\Enums\EstadoReserva;
+use App\Reserva\Mail\ReservaConfirmada;
 use App\Reserva\Models\Reserva;
+use Illuminate\Support\Facades\Mail;
 
 function reservaAdmin(): Admin
 {
@@ -55,6 +57,7 @@ function reservaPublicaValida(Cancha $cancha, array $overrides = []): array
         'fecha_turno' => now()->addDay()->toDateString(),
         'hora_inicio' => '10:00',
         'nombre_cliente' => 'Ana Gómez',
+        'email_cliente' => 'cliente@example.com',
         'telefono_cliente' => '1122334455',
         'observaciones' => null,
         ...$overrides,
@@ -163,8 +166,8 @@ test('public reservations on an unavailable cancha are rejected', function () {
 test('public reservations require visitor contact data', function () {
     $cancha = canchaPublica();
 
-    $this->post('/reservas', reservaPublicaValida($cancha, ['nombre_cliente' => '', 'telefono_cliente' => '']))
-        ->assertSessionHasErrors(['nombre_cliente', 'telefono_cliente']);
+    $this->post('/reservas', reservaPublicaValida($cancha, ['nombre_cliente' => '', 'email_cliente' => null]))
+        ->assertSessionHasErrors(['nombre_cliente', 'email_cliente']);
 
     $this->assertDatabaseCount('reservas', 0);
 });
@@ -299,4 +302,78 @@ test('admin cannot create a reserva on a day the cancha does not attend', functi
 
 test('reserva estado enum values are exposed', function () {
     expect(EstadoReserva::values())->toBe(['pendiente', 'confirmada', 'cancelada', 'completada']);
+});
+
+test('la reserva pública exige email', function () {
+    $cancha = canchaPublica();
+
+    $this->post('/reservas', reservaPublicaValida($cancha, ['email_cliente' => null]))
+        ->assertSessionHasErrors('email_cliente');
+
+    $this->assertDatabaseCount('reservas', 0);
+});
+
+test('la reserva pública acepta teléfono opcional', function () {
+    $cancha = canchaPublica();
+
+    $this->post('/reservas', reservaPublicaValida($cancha, ['telefono_cliente' => null]))
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $reserva = Reserva::query()->firstOrFail();
+
+    expect($reserva->email_cliente)->toBe('cliente@example.com')
+        ->and($reserva->telefono_cliente)->toBeNull();
+});
+
+test('la reserva de admin no exige email', function () {
+    Mail::fake();
+
+    $cancha = Cancha::factory()->create();
+
+    $this->actingAs(reservaAdmin())
+        ->post('/admin/reservas', reservaValida($cancha))
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('reservas', [
+        'cancha_id' => $cancha->id,
+        'email_cliente' => null,
+    ]);
+    Mail::assertNotSent(ReservaConfirmada::class);
+});
+
+test('confirmar una reserva envía el mail', function () {
+    Mail::fake();
+
+    $reserva = Reserva::factory()->cancelada()->create(['email_cliente' => 'cliente@example.com']);
+
+    $this->actingAs(reservaAdmin())
+        ->patch("/admin/reservas/{$reserva->id}/estado", ['estado' => EstadoReserva::Confirmada->value])
+        ->assertRedirect();
+
+    Mail::assertSent(ReservaConfirmada::class, fn ($mail) => $mail->hasTo('cliente@example.com'));
+});
+
+test('cancelar una reserva no envía mail', function () {
+    Mail::fake();
+
+    $reserva = Reserva::factory()->create(['email_cliente' => 'cliente@example.com']);
+
+    $this->actingAs(reservaAdmin())
+        ->patch("/admin/reservas/{$reserva->id}/estado", ['estado' => EstadoReserva::Cancelada->value])
+        ->assertRedirect();
+
+    Mail::assertNotSent(ReservaConfirmada::class);
+});
+
+test('el alta de admin con email envía el mail', function () {
+    Mail::fake();
+
+    $cancha = Cancha::factory()->create();
+
+    $this->actingAs(reservaAdmin())
+        ->post('/admin/reservas', reservaValida($cancha, ['email_cliente' => 'cliente@example.com']))
+        ->assertRedirect();
+
+    Mail::assertSent(ReservaConfirmada::class, fn ($mail) => $mail->hasTo('cliente@example.com'));
 });

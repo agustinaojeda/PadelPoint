@@ -9,8 +9,6 @@ class CanchaImagen
 {
     public const DEFAULT_PATH = 'images/cancha-default.webp';
 
-    private const DISK = 'public';
-
     private const DIRECTORY = 'canchas';
 
     /**
@@ -18,9 +16,7 @@ class CanchaImagen
      */
     public static function store(UploadedFile $imagen): string
     {
-        $path = $imagen->store(self::DIRECTORY, self::DISK);
-
-        return 'storage/'.$path;
+        return $imagen->store(self::DIRECTORY, self::disk());
     }
 
     /**
@@ -32,7 +28,7 @@ class CanchaImagen
             return asset(self::DEFAULT_PATH);
         }
 
-        return asset($ruta);
+        return Storage::disk(self::disk())->url($ruta);
     }
 
     public static function deleteIfCustom(?string $ruta): void
@@ -41,10 +37,10 @@ class CanchaImagen
             return;
         }
 
-        $relativePath = self::relativePath($ruta);
+        $disco = Storage::disk(self::disk());
 
-        if (Storage::disk(self::DISK)->exists($relativePath)) {
-            Storage::disk(self::DISK)->delete($relativePath);
+        if ($disco->exists($ruta)) {
+            $disco->delete($ruta);
         }
     }
 
@@ -53,8 +49,8 @@ class CanchaImagen
         return $ruta === null || $ruta === '' || str_contains($ruta, 'cancha-default');
     }
 
-    private static function relativePath(?string $ruta): string
+    private static function disk(): string
     {
-        return str_replace('storage/', '', (string) $ruta);
+        return (string) (config('filesystems.canchas_disk') ?: 'public');
     }
 }

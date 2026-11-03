@@ -25,7 +25,7 @@ The auth/settings scaffolding comes from the Laravel Vue starter kit; app-specif
 - Reservation states: `pendiente`, `confirmada`, `cancelada`, `completada` (`App\Enums\EstadoReserva`). A completed reservation cannot change state or be deleted.
 - Double-booking is prevented server-side in `CreateReserva` + `ExisteSolapamientoReserva`: every state except `cancelada` blocks an overlapping slot, checked inside a `lockForUpdate` transaction. `resources/js/lib/turnos.ts` only mirrors this for display, so always enforce on the server.
 - `DELETE /canchas/{cancha}` deactivates (`esta_disponible = false`, `desactivada_en = now`); `DELETE /canchas/{cancha}/eliminar` hard-deletes and is rejected while reservas exist. A scheduled command purges canchas deactivated more than 30 days ago with no reservas.
-- Cancha images go through `App\Cancha\Support\CanchaImagen`: `public` disk, DB path `storage/canchas/...`, fallback `images/cancha-default.webp`. New setups need `php artisan storage:link`.
+- Cancha images go through `App\Cancha\Support\CanchaImagen`: configurable disk (`CANCHAS_DISK`, default `public`), DB path `canchas/...`, fallback `images/cancha-default.webp`. New setups need `php artisan storage:link` when using the `public` disk.
 - `routes/console.php` schedules `app:completar-reservas-vencidas` hourly and `app:purge-desactivadas-canchas` daily; run `php artisan schedule:work` locally if you need them.
 
 ## Database and tests
