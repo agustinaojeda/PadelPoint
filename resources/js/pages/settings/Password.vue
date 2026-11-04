@@ -10,6 +10,7 @@ import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { validarPassword } from '@/lib/validaciones';
 import { type BreadcrumbItem } from '@/types';
 
 interface Props {
@@ -35,6 +36,15 @@ const form = useForm({
 });
 
 const updatePassword = () => {
+    form.clearErrors();
+
+    const errores = validarPassword(form, { requiereActual: true });
+
+    if (errores.length > 0) {
+        errores.forEach(({ campo, mensaje }) => form.setError(campo, mensaje));
+        return;
+    }
+
     form.put(route('password.update'), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
@@ -79,6 +89,7 @@ const updatePassword = () => {
                             class="mt-1 block w-full"
                             autocomplete="current-password"
                             placeholder="Contraseña actual"
+                            required
                         />
                         <InputError :message="form.errors.current_password" />
                     </div>
@@ -93,6 +104,8 @@ const updatePassword = () => {
                             class="mt-1 block w-full"
                             autocomplete="new-password"
                             placeholder="Nueva contraseña"
+                            minlength="8"
+                            required
                         />
                         <InputError :message="form.errors.password" />
                     </div>
@@ -106,6 +119,8 @@ const updatePassword = () => {
                             class="mt-1 block w-full"
                             autocomplete="new-password"
                             placeholder="Confirmar contraseña"
+                            minlength="8"
+                            required
                         />
                         <InputError :message="form.errors.password_confirmation" />
                     </div>

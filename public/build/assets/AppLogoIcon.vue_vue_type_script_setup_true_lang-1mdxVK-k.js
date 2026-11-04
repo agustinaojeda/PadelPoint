@@ -1,1 +1,0 @@
-import{d as o,b as e,e as s}from"./app-Cf3NO22u.js";const a={src:"/logo_fondo.svg",alt:"Logo de la aplicación",class:"h-9 w-auto"},p=o({inheritAttrs:!1,__name:"AppLogoIcon",props:{className:{}},setup(t){return(c,n)=>(s(),e("img",a))}});export{p as _};

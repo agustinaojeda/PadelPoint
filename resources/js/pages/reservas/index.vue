@@ -2,10 +2,12 @@
 import EmptyState from '@/components/shared/EmptyState.vue';
 import { useFechaReservas } from '@/composables/useFechaReservas';
 import PublicLayout from '@/layouts/PublicLayout.vue';
+import { turnoYaComenzo } from '@/lib/validaciones';
 import type { CanchaConSlots, ReservaConfirmada, SlotPublico } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { CalendarX } from 'lucide-vue-next';
 import { nextTick, ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 import CanchaDisponibleCard from './components/CanchaDisponibleCard.vue';
 import ConfirmacionReserva from './components/ConfirmacionReserva.vue';
@@ -26,6 +28,11 @@ const reservaConfirmada = ref<ReservaConfirmada | null>(null);
 
 const abrirReserva = (cancha: CanchaConSlots, slot: SlotPublico) => {
     if (!slot.disponible) {
+        return;
+    }
+
+    if (turnoYaComenzo(fecha.value, slot.hora_inicio)) {
+        toast.error('Ese horario ya pasó. Elegí un turno posterior.');
         return;
     }
 

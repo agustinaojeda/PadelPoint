@@ -3,6 +3,8 @@
 namespace App\Reserva\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
+use Illuminate\Validation\Validator;
 
 class StoreReservaPublicaRequest extends FormRequest
 {
@@ -11,6 +13,44 @@ class StoreReservaPublicaRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * Rechaza turnos del día cuya hora de inicio ya pasó. La vista pública
+     * oculta esos horarios, pero el servidor debe validarlo igual.
+     *
+     * @return array<int, callable>
+     */
+    public function after(): array
+    {
+        return [
+            function (Validator $validator): void {
+                if ($validator->errors()->isNotEmpty()) {
+                    return;
+                }
+
+                $fecha = $this->input('fecha_turno');
+                $hora = $this->input('hora_inicio');
+
+                if (! is_string($fecha) || ! is_string($hora)) {
+                    return;
+                }
+
+                $ahora = Carbon::now();
+
+                if ($fecha !== $ahora->toDateString()) {
+                    return;
+                }
+
+                [$horas, $minutos] = array_map('intval', explode(':', $hora));
+                $inicioMinutos = ($horas * 60) + $minutos;
+                $ahoraMinutos = ($ahora->hour * 60) + $ahora->minute;
+
+                if ($inicioMinutos <= $ahoraMinutos) {
+                    $validator->errors()->add('hora_inicio', 'Ese horario ya pasó. Elegí un turno posterior.');
+                }
+            },
+        ];
     }
 
     /**

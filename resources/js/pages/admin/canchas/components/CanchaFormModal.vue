@@ -32,7 +32,7 @@ const { form, imagePreview, handleImageChange, clearSelectedImage, submit } = us
                     </div>
 
                     <div class="flex-1 space-y-2">
-                        <input type="file" id="imagen" accept="image/*" class="hidden" @change="handleImageChange" />
+                        <input type="file" id="imagen" accept="image/jpeg,image/png,image/webp" class="hidden" @change="handleImageChange" />
                         <label
                             for="imagen"
                             class="inline-flex cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-xs font-medium transition-colors hover:bg-muted"
@@ -52,19 +52,19 @@ const { form, imagePreview, handleImageChange, clearSelectedImage, submit } = us
 
             <div>
                 <Label for="cancha-nombre" class="text-sm font-medium">Nombre</Label>
-                <Input id="cancha-nombre" v-model="form.nombre" type="text" class="mt-1" required />
+                <Input id="cancha-nombre" v-model="form.nombre" type="text" class="mt-1" maxlength="255" required />
                 <InputError :message="form.errors.nombre" class="mt-1" />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <Label for="cancha-precio" class="text-sm font-medium">Precio por Turno ($)</Label>
-                    <Input id="cancha-precio" v-model="form.precio" type="number" step="0.01" class="mt-1" required />
+                    <Input id="cancha-precio" v-model="form.precio" type="number" min="0" step="0.01" class="mt-1" required />
                     <InputError :message="form.errors.precio" class="mt-1" />
                 </div>
                 <div>
                     <Label for="cancha-superficie" class="text-sm font-medium">Superficie (opcional)</Label>
-                    <Input id="cancha-superficie" v-model="form.superficie" type="text" class="mt-1" />
+                    <Input id="cancha-superficie" v-model="form.superficie" type="text" class="mt-1" maxlength="100" />
                     <InputError :message="form.errors.superficie" class="mt-1" />
                 </div>
             </div>
@@ -72,7 +72,7 @@ const { form, imagePreview, handleImageChange, clearSelectedImage, submit } = us
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <Label for="cancha-jugadores" class="text-sm font-medium">Cantidad de Jugadores</Label>
-                    <Input id="cancha-jugadores" v-model="form.cantidad_jugadores" type="number" min="1" step="1" class="mt-1" required />
+                    <Input id="cancha-jugadores" v-model="form.cantidad_jugadores" type="number" min="2" step="1" class="mt-1" required />
                     <InputError :message="form.errors.cantidad_jugadores" class="mt-1" />
                 </div>
                 <div>

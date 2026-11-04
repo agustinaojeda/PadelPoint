@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { validarReservaAdmin } from '@/lib/validaciones';
 import type { Cancha, SlotTurno } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { Calendar, Clock, DollarSign, FileText, Mail, Phone, User } from 'lucide-vue-next';
@@ -50,6 +51,15 @@ watch(
 );
 
 const submit = () => {
+    form.clearErrors();
+
+    const errores = validarReservaAdmin(form);
+
+    if (errores.length > 0) {
+        errores.forEach(({ campo, mensaje }) => form.setError(campo, mensaje));
+        return;
+    }
+
     form.post(route('admin.reservas.store'), {
         preserveScroll: true,
         onSuccess: () => {
@@ -103,6 +113,7 @@ const cerrarModal = () => {
                     type="text"
                     placeholder="Ej. Juan Pérez"
                     :disabled="form.processing"
+                    maxlength="255"
                     required
                 />
                 <InputError :message="form.errors.nombre_cliente" class="mt-1" />
@@ -113,7 +124,14 @@ const cerrarModal = () => {
                     <Mail class="h-3.5 w-3.5 text-muted-foreground" />
                     Correo electrónico (Opcional)
                 </Label>
-                <Input id="email_cliente" v-model="form.email_cliente" type="email" placeholder="Ej. juan@correo.com" :disabled="form.processing" />
+                <Input
+                    id="email_cliente"
+                    v-model="form.email_cliente"
+                    type="email"
+                    placeholder="Ej. juan@correo.com"
+                    maxlength="255"
+                    :disabled="form.processing"
+                />
                 <InputError :message="form.errors.email_cliente" class="mt-1" />
             </div>
 
@@ -122,7 +140,14 @@ const cerrarModal = () => {
                     <Phone class="h-3.5 w-3.5 text-muted-foreground" />
                     Teléfono / WhatsApp (Opcional)
                 </Label>
-                <Input id="telefono_cliente" v-model="form.telefono_cliente" type="text" placeholder="Ej. 2664123456" :disabled="form.processing" />
+                <Input
+                    id="telefono_cliente"
+                    v-model="form.telefono_cliente"
+                    type="text"
+                    placeholder="Ej. 2664123456"
+                    maxlength="50"
+                    :disabled="form.processing"
+                />
                 <InputError :message="form.errors.telefono_cliente" class="mt-1" />
             </div>
 
@@ -131,7 +156,7 @@ const cerrarModal = () => {
                     <DollarSign class="h-3.5 w-3.5 text-muted-foreground" />
                     Monto Total ($) *
                 </Label>
-                <Input id="monto_total" v-model="form.monto_total" type="number" step="0.01" :disabled="form.processing" required />
+                <Input id="monto_total" v-model="form.monto_total" type="number" min="0" step="0.01" :disabled="form.processing" required />
                 <InputError :message="form.errors.monto_total" class="mt-1" />
             </div>
 

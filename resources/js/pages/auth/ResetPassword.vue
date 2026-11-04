@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+import { validarPassword } from '@/lib/validaciones';
 import { Head, useForm } from '@inertiajs/vue3';
 import { LoaderCircle } from 'lucide-vue-next';
 
@@ -22,6 +23,15 @@ const form = useForm({
 });
 
 const submit = () => {
+    form.clearErrors();
+
+    const errores = validarPassword(form);
+
+    if (errores.length > 0) {
+        errores.forEach(({ campo, mensaje }) => form.setError(campo, mensaje));
+        return;
+    }
+
     form.post(route('password.store'), {
         onFinish: () => {
             form.reset('password', 'password_confirmation');
@@ -53,6 +63,8 @@ const submit = () => {
                         class="mt-1 block w-full"
                         autofocus
                         placeholder="Contraseña"
+                        minlength="8"
+                        required
                     />
                     <InputError :message="form.errors.password" />
                 </div>
@@ -67,6 +79,8 @@ const submit = () => {
                         v-model="form.password_confirmation"
                         class="mt-1 block w-full"
                         placeholder="Confirmar contraseña"
+                        minlength="8"
+                        required
                     />
                     <InputError :message="form.errors.password_confirmation" />
                 </div>

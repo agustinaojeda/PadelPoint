@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatearFechaLarga } from '@/lib/fechas';
 import { formatHora, formatPrecio } from '@/lib/formatos';
+import { validarReservaPublica } from '@/lib/validaciones';
 import type { CanchaConSlots, ReservaConfirmada, SlotPublico } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { CalendarDays, Clock, Loader2 } from 'lucide-vue-next';
@@ -52,6 +53,15 @@ const cerrarModal = () => {
 };
 
 const submit = () => {
+    form.clearErrors();
+
+    const errores = validarReservaPublica(form);
+
+    if (errores.length > 0) {
+        errores.forEach(({ campo, mensaje }) => form.setError(campo, mensaje));
+        return;
+    }
+
     form.post(route('reservas.store'), {
         preserveScroll: true,
         preserveState: true,
@@ -104,6 +114,9 @@ const submit = () => {
                     autocomplete="name"
                     placeholder="Ej. Juan Pérez"
                     class="rounded-xl border-slate-200 bg-white text-sm text-slate-900 focus-visible:ring-lime-200"
+                    minlength="3"
+                    maxlength="255"
+                    required
                     :disabled="form.processing"
                 />
                 <InputError :message="form.errors.nombre_cliente" class="mt-1" />
@@ -118,6 +131,7 @@ const submit = () => {
                     autocomplete="email"
                     placeholder="Ej. juan@correo.com"
                     class="rounded-xl border-slate-200 bg-white text-sm text-slate-900 focus-visible:ring-lime-200"
+                    maxlength="255"
                     :disabled="form.processing"
                     required
                 />
@@ -133,6 +147,8 @@ const submit = () => {
                     autocomplete="tel"
                     placeholder="Ej. 2664123456"
                     class="rounded-xl border-slate-200 bg-white text-sm text-slate-900 focus-visible:ring-lime-200"
+                    minlength="6"
+                    maxlength="50"
                     :disabled="form.processing"
                 />
                 <InputError :message="form.errors.telefono_cliente" class="mt-1" />
@@ -146,6 +162,7 @@ const submit = () => {
                     rows="2"
                     placeholder="Ej. Necesito paletas de alquiler."
                     class="flex w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none focus-visible:border-lime-400 focus-visible:ring-2 focus-visible:ring-lime-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    maxlength="500"
                     :disabled="form.processing"
                 ></textarea>
                 <InputError :message="form.errors.observaciones" class="mt-1" />

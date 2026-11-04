@@ -1,4 +1,5 @@
 import { formatDiasDisponibles } from '@/lib/formatos';
+import { validarCancha } from '@/lib/validaciones';
 import type { Cancha, FormCanchaData } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -73,6 +74,15 @@ export function useCanchaForm(props: { open: boolean; cancha?: Cancha | null }, 
     );
 
     const submit = () => {
+        form.clearErrors();
+
+        const errores = validarCancha(form);
+
+        if (errores.length > 0) {
+            errores.forEach(({ campo, mensaje }) => form.setError(campo, mensaje));
+            return;
+        }
+
         const payloadDias = form.dias_disponibles.map((dia) => Number(dia));
 
         if (props.cancha) {
