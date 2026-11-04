@@ -10,7 +10,7 @@ The auth/settings scaffolding comes from the Laravel Vue starter kit; app-specif
 - Tests: `php artisan test --compact`; one file: `php artisan test --compact tests/Feature/ReservaTest.php`; one test: add `--filter="test name"`. Direct runner: `vendor/bin/pest`.
 - PHP format (required after PHP edits): `vendor/bin/pint --dirty --format agent`. There is no `pint.json`; the default Laravel preset applies.
 - Frontend: `npm run dev`, `npm run build`, `npm run lint` (ESLint, applies fixes), `npm run format` / `format:check` (Prettier, writes only `resources/`).
-- No typecheck npm script. Use `npx vue-tsc --noEmit`; it currently reports two pre-existing errors at `resources/js/composables/useCanchaForm.ts:23` and `resources/js/pages/reservas/components/ModalReserva.vue:22`. Compare against that baseline instead of fixing unrelated code.
+- No typecheck npm script. Use `npx vue-tsc --noEmit`; it should report no errors. (`FormCanchaData` in `resources/js/types/cancha.ts` carries a `Record<string, FormDataConvertible>` intersection because Inertia's `useForm<T>` requires an index signature, and the old `ModalReserva.vue` baseline error is gone with the file.)
 - If `npm`/`npx` fail with a PowerShell execution-policy error, use `cmd /c "npm run ..."`.
 
 ## Architecture

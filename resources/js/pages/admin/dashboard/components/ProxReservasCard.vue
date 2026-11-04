@@ -46,7 +46,7 @@ defineProps<{
                             </Badge>
                         </div>
                         <div class="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span class="flex items-center gap-1"> <User class="h-3 w-3" /> {{ reserva.nombre_cliente }} </span>
+                            <span class="flex items-center gap-1"> <User class="h-3 w-3" /> {{ reserva.nombre_cliente }} - {{ reserva.email_cliente }} </span>
                             <a
                                 v-if="reserva.telefono_cliente"
                                 :href="whatsappUrl(reserva.telefono_cliente)"

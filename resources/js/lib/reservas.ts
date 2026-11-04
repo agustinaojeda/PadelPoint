@@ -7,14 +7,11 @@ export interface EstadoReservaMeta {
     variant: NonNullable<BadgeVariants['variant']>;
 }
 
-/**
- * Fuente única de verdad para etiquetas y variantes visuales de los estados.
- */
 export const ESTADOS_RESERVA: EstadoReservaMeta[] = [
-    { valor: 'pendiente', etiqueta: 'Pendiente', variant: 'outline' },
-    { valor: 'confirmada', etiqueta: 'Confirmada', variant: 'default' },
-    { valor: 'completada', etiqueta: 'Completada', variant: 'secondary' },
-    { valor: 'cancelada', etiqueta: 'Cancelada', variant: 'destructive' },
+    { valor: 'pendiente', etiqueta: 'Pendiente', variant: 'naranja' },
+    { valor: 'confirmada', etiqueta: 'Confirmada', variant: 'verde' },
+    { valor: 'completada', etiqueta: 'Completada', variant: 'gris' },
+    { valor: 'cancelada', etiqueta: 'Cancelada', variant: 'rojo' },
 ];
 
 export const metaEstadoReserva = (estado: EstadoReserva): EstadoReservaMeta =>

@@ -1,3 +1,5 @@
+import type { FormDataConvertible } from '@inertiajs/core';
+
 export interface Cancha {
     id: number;
     nombre: string;
@@ -14,7 +16,7 @@ export interface Cancha {
     dias_disponibles: number[];
 }
 
-export interface FormCanchaData {
+export type FormCanchaData = {
     nombre: string;
     superficie: string;
     es_techada: boolean;
@@ -28,4 +30,4 @@ export interface FormCanchaData {
     dias_disponibles: number[];
     imagen: File | null;
     _method?: string;
-}
+} & Record<string, FormDataConvertible>;

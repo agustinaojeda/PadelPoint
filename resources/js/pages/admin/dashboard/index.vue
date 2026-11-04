@@ -5,6 +5,7 @@ import type { BalanceAnual, BreadcrumbItem, CanchaResumen, FranjaHoraria, Metric
 import { Head, Link } from '@inertiajs/vue3';
 import { Calendar } from 'lucide-vue-next';
 
+import AvisoReservasPendientes from './components/AvisoReservasPendientes.vue';
 import BalanceAnualChart from './components/BalanceAnualChart.vue';
 import DemandaDiasCard from './components/DemandaDiasCard.vue';
 import MetricasCard from './components/MetricasCard.vue';
@@ -20,6 +21,7 @@ withDefaults(
         proximasReservas?: Reserva[];
         canchasResumen?: CanchaResumen[];
         balanceAnual?: BalanceAnual[];
+        reservasPendientesHoy?: number;
     }>(),
     {
         metrics: () => ({
@@ -34,6 +36,7 @@ withDefaults(
         proximasReservas: () => [],
         canchasResumen: () => [],
         balanceAnual: () => [],
+        reservasPendientesHoy: 0,
     },
 );
 
@@ -57,6 +60,8 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Panel de Control', href: route(
                     </Link>
                 </Button>
             </div>
+
+            <AvisoReservasPendientes :cantidad="reservasPendientesHoy" />
 
             <MetricasCard :metrics="metrics" />
 

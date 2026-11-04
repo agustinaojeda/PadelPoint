@@ -42,4 +42,5 @@ export interface DashboardProps {
     proximasReservas: Reserva[];
     canchasResumen: CanchaResumen[];
     balanceAnual: BalanceAnual[];
+    reservasPendientesHoy: number;
 }
