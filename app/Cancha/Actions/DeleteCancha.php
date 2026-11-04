@@ -4,27 +4,36 @@ namespace App\Cancha\Actions;
 
 use App\Cancha\Models\Cancha;
 use App\Cancha\Support\CanchaImagen;
-use Illuminate\Validation\ValidationException;
 
 class DeleteCancha
 {
     /**
-     * Elimina definitivamente una cancha solo si no tiene reservas asociadas.
+     * Elimina definitivamente una cancha sin reservas. Si tiene reservas,
+     * la oculta del panel conservando el historial y borra su imagen.
      *
-     * @throws ValidationException
+     * @return bool Indica si la cancha fue ocultada en lugar de eliminada.
      */
-    public function __invoke(Cancha $cancha): void
+    public function __invoke(Cancha $cancha): bool
     {
-        if ($cancha->reservas()->exists()) {
-            throw ValidationException::withMessages([
-                'cancha' => 'No se puede eliminar una cancha que tiene reservas registradas.',
-            ]);
-        }
-
         $rutaImagen = $cancha->getRawOriginal('imagen_url');
+
+        if ($cancha->reservas()->exists()) {
+            $cancha->update([
+                'esta_disponible' => false,
+                'desactivada_en' => $cancha->desactivada_en ?? now(),
+                'oculta_en' => now(),
+                'imagen_url' => null,
+            ]);
+
+            CanchaImagen::deleteIfCustom($rutaImagen);
+
+            return true;
+        }
 
         $cancha->delete();
 
         CanchaImagen::deleteIfCustom($rutaImagen);
+
+        return false;
     }
 }

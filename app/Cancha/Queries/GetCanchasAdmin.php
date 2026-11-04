@@ -13,6 +13,7 @@ class GetCanchasAdmin
     public function __invoke(): LengthAwarePaginator
     {
         return Cancha::query()
+            ->whereNull('oculta_en')
             ->orderBy('esta_disponible', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(9);

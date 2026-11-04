@@ -77,12 +77,17 @@ class CanchaController extends Controller
     }
 
     /**
-     * Eliminación definitiva de la cancha.
+     * Eliminación definitiva de la cancha o su ocultamiento si tiene reservas.
      */
     public function eliminar(Cancha $cancha): RedirectResponse
     {
-        ($this->deleteCancha)($cancha);
+        $ocultada = ($this->deleteCancha)($cancha);
 
-        return back()->with('success', 'Cancha eliminada definitivamente.');
+        return back()->with(
+            'success',
+            $ocultada
+                ? 'La cancha tiene reservas registradas: se ocultó del panel y se eliminó su imagen conservando el historial.'
+                : 'Cancha eliminada definitivamente.',
+        );
     }
 }

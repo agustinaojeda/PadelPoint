@@ -32,6 +32,7 @@ class CanchaFactory extends Factory
             'hora_cierre' => '23:00',
             'dias_disponibles' => [1, 2, 3, 4, 5],
             'desactivada_en' => null,
+            'oculta_en' => null,
         ];
     }
 

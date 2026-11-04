@@ -34,6 +34,7 @@ class Cancha extends Model
         'hora_cierre',
         'dias_disponibles',
         'desactivada_en',
+        'oculta_en',
     ];
 
     /**
@@ -45,6 +46,7 @@ class Cancha extends Model
             'es_techada' => 'boolean',
             'esta_disponible' => 'boolean',
             'desactivada_en' => 'datetime',
+            'oculta_en' => 'datetime',
             'precio' => 'float',
             'duracion_turno' => 'integer',
             'cantidad_jugadores' => 'integer',

@@ -96,15 +96,43 @@ test('admin can deactivate and reactivate a cancha', function () {
         ->desactivada_en->toBeNull();
 });
 
-test('a cancha with reservas cannot be permanently deleted', function () {
-    $cancha = Cancha::factory()->create();
-    Reserva::factory()->create(['cancha_id' => $cancha->id]);
+test('a cancha with reservas is hidden instead of deleted', function () {
+    Storage::fake('public');
+
+    $cancha = Cancha::factory()->create(['imagen_url' => 'canchas/vieja.png']);
+    Storage::disk('public')->put('canchas/vieja.png', 'contenido');
+
+    $reserva = Reserva::factory()->create(['cancha_id' => $cancha->id]);
 
     $this->actingAs(adminAutenticado())
         ->delete("/admin/canchas/{$cancha->id}/eliminar")
-        ->assertSessionHasErrors('cancha');
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
 
-    $this->assertDatabaseHas('canchas', ['id' => $cancha->id]);
+    $canchaFresca = $cancha->fresh();
+
+    expect($canchaFresca)
+        ->not->toBeNull()
+        ->esta_disponible->toBeFalse()
+        ->desactivada_en->not->toBeNull()
+        ->oculta_en->not->toBeNull();
+
+    $this->assertDatabaseHas('canchas', ['id' => $cancha->id, 'imagen_url' => null]);
+    $this->assertDatabaseHas('reservas', ['id' => $reserva->id]);
+    Storage::disk('public')->assertMissing('canchas/vieja.png');
+});
+
+test('hidden canchas are not listed in the admin panel', function () {
+    $visible = Cancha::factory()->create();
+    Cancha::factory()->create(['oculta_en' => now()]);
+
+    $this->actingAs(adminAutenticado())
+        ->get('/admin/canchas')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('admin/canchas/index')
+            ->has('canchas.data', 1)
+            ->where('canchas.data.0.id', $visible->id));
 });
 
 test('a cancha without reservas can be permanently deleted', function () {

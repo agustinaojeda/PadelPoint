@@ -69,7 +69,7 @@ const activarCancha = (cancha: Cancha) => {
 };
 
 const eliminarCancha = (cancha: Cancha) => {
-    if (confirm('¿Seguro que deseas eliminar definitivamente esta cancha? Esta acción no se puede deshacer.')) {
+    if (confirm('¿Seguro que deseas eliminar esta cancha? Esta acción no se puede deshacer.')) {
         router.delete(route('admin.canchas.eliminar', { cancha: cancha.id }), { preserveScroll: true });
     }
 };
