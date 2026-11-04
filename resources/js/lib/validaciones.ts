@@ -266,6 +266,25 @@ export function validarReservaAdmin(datos: DatosReservaAdmin): ErrorValidacion<C
     return errores;
 }
 
+/**
+ * Valida el archivo de imagen seleccionado. Devuelve null si es válido.
+ */
+export function validarImagenCancha(imagen: File | null): string | null {
+    if (!(imagen instanceof File)) {
+        return null;
+    }
+
+    if (!TIPOS_IMAGEN.includes(imagen.type)) {
+        return 'La imagen debe estar en formato JPG, JPEG, PNG o WEBP.';
+    }
+
+    if (imagen.size > TAMANIO_MAXIMO_IMAGEN) {
+        return 'La imagen es muy pesada. El tamaño máximo permitido es 2 MB.';
+    }
+
+    return null;
+}
+
 export function validarCancha(datos: DatosCancha): ErrorValidacion<CampoCancha>[] {
     const errores: ErrorValidacion<CampoCancha>[] = [];
 
@@ -327,12 +346,10 @@ export function validarCancha(datos: DatosCancha): ErrorValidacion<CampoCancha>[
         errores.push({ campo: 'dias_disponibles', mensaje: 'Selecciona al menos un día disponible.' });
     }
 
-    if (datos.imagen instanceof File) {
-        if (!TIPOS_IMAGEN.includes(datos.imagen.type)) {
-            errores.push({ campo: 'imagen', mensaje: 'La imagen debe estar en formato JPG, JPEG, PNG o WEBP.' });
-        } else if (datos.imagen.size > TAMANIO_MAXIMO_IMAGEN) {
-            errores.push({ campo: 'imagen', mensaje: 'La imagen es muy pesada. El tamaño máximo permitido es 2 MB.' });
-        }
+    const errorImagen = validarImagenCancha(datos.imagen);
+
+    if (errorImagen) {
+        errores.push({ campo: 'imagen', mensaje: errorImagen });
     }
 
     if (

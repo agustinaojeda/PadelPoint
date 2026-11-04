@@ -66,13 +66,16 @@ export const formatearDias = (dias: number[] | string | undefined | null): strin
     let listaDias: number[] = [];
     if (typeof dias === 'string') {
         try {
-            listaDias = JSON.parse(dias);
+            const parsed = JSON.parse(dias);
+            listaDias = Array.isArray(parsed) ? parsed : [];
         } catch {
             return dias;
         }
     } else if (Array.isArray(dias)) {
         listaDias = dias;
     }
+
+    listaDias = listaDias.map(Number).filter((dia) => Number.isInteger(dia));
 
     if (listaDias.length === 0) return 'Sin días asignados';
     if (listaDias.length === 7) return 'Todos los días';

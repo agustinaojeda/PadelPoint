@@ -37,7 +37,9 @@ const mapaCanchasSlots = computed(() => {
     const diaSemana = fechaObj.getDay();
 
     const canchasDisponiblesHoy = props.canchas.filter((cancha) => {
-        return Array.isArray(cancha.dias_disponibles) && cancha.dias_disponibles.includes(diaSemana);
+        const dias = Array.isArray(cancha.dias_disponibles) ? cancha.dias_disponibles.map(Number) : [];
+
+        return dias.includes(diaSemana);
     });
 
     return canchasDisponiblesHoy.map((cancha) => ({

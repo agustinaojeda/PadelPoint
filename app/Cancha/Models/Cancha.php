@@ -67,7 +67,9 @@ class Cancha extends Model
      */
     public function atiendeDia(int $diaSemana): bool
     {
-        return in_array($diaSemana, $this->dias_disponibles ?? [], true);
+        $dias = array_map('intval', $this->dias_disponibles ?? []);
+
+        return in_array($diaSemana, $dias, true);
     }
 
     /**

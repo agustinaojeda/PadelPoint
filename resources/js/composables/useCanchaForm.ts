@@ -1,5 +1,5 @@
 import { formatDiasDisponibles } from '@/lib/formatos';
-import { validarCancha } from '@/lib/validaciones';
+import { validarCancha, validarImagenCancha } from '@/lib/validaciones';
 import type { Cancha, FormCanchaData } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -25,15 +25,29 @@ export function useCanchaForm(props: { open: boolean; cancha?: Cancha | null }, 
 
     const handleImageChange = (e: Event) => {
         const target = e.target as HTMLInputElement;
-        if (target.files && target.files[0]) {
-            const file = target.files[0];
-            form.imagen = file;
-            imagePreview.value = URL.createObjectURL(file);
+
+        if (!target.files || !target.files[0]) {
+            return;
         }
+
+        const file = target.files[0];
+        const error = validarImagenCancha(file);
+
+        if (error) {
+            form.setError('imagen', error);
+            target.value = '';
+
+            return;
+        }
+
+        form.clearErrors('imagen');
+        form.imagen = file;
+        imagePreview.value = URL.createObjectURL(file);
     };
 
     const clearSelectedImage = () => {
         form.imagen = null;
+        form.clearErrors('imagen');
         imagePreview.value = props.cancha?.imagen_url ?? null;
     };
 

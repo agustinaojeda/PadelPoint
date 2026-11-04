@@ -45,6 +45,25 @@ class StoreCanchaRequest extends FormRequest
         ];
     }
 
+    /**
+     * Normaliza los días recibidos por multipart, donde FormData los envía como texto.
+     */
+    protected function prepareForValidation(): void
+    {
+        $dias = $this->input('dias_disponibles');
+
+        if (! is_array($dias)) {
+            return;
+        }
+
+        $this->merge([
+            'dias_disponibles' => array_map(
+                static fn (mixed $dia): mixed => is_string($dia) && ctype_digit($dia) ? (int) $dia : $dia,
+                $dias,
+            ),
+        ]);
+    }
+
     public function rules(): array
     {
         return [

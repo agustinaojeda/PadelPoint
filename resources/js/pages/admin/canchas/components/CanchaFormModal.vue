@@ -42,6 +42,7 @@ const { form, imagePreview, handleImageChange, clearSelectedImage, submit } = us
                         <p v-if="!imagePreview" class="text-[11px] text-muted-foreground">
                             Si no seleccionas ninguna, se asignará una imagen por defecto.
                         </p>
+                        <p class="text-[11px] text-muted-foreground">JPG, PNG o WEBP · máximo 2 MB.</p>
                         <button v-if="form.imagen" type="button" @click="clearSelectedImage" class="block text-xs text-destructive hover:underline">
                             Quitar selección
                         </button>
