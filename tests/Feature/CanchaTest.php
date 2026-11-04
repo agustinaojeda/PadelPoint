@@ -102,7 +102,10 @@ test('a cancha with reservas is hidden instead of deleted', function () {
     $cancha = Cancha::factory()->create(['imagen_url' => 'canchas/vieja.png']);
     Storage::disk('public')->put('canchas/vieja.png', 'contenido');
 
-    $reserva = Reserva::factory()->create(['cancha_id' => $cancha->id]);
+    $reserva = Reserva::factory()->completada()->create([
+        'cancha_id' => $cancha->id,
+        'fecha_turno' => now()->subDay()->toDateString(),
+    ]);
 
     $this->actingAs(adminAutenticado())
         ->delete("/admin/canchas/{$cancha->id}/eliminar")
@@ -120,6 +123,31 @@ test('a cancha with reservas is hidden instead of deleted', function () {
     $this->assertDatabaseHas('canchas', ['id' => $cancha->id, 'imagen_url' => null]);
     $this->assertDatabaseHas('reservas', ['id' => $reserva->id]);
     Storage::disk('public')->assertMissing('canchas/vieja.png');
+});
+
+test('a cancha with reservas por efectuar cannot be archived', function () {
+    Storage::fake('public');
+
+    $cancha = Cancha::factory()->desactivada()->create(['imagen_url' => 'canchas/vieja.png']);
+    Storage::disk('public')->put('canchas/vieja.png', 'contenido');
+
+    Reserva::factory()->create([
+        'cancha_id' => $cancha->id,
+        'fecha_turno' => now()->addDay()->toDateString(),
+    ]);
+
+    $this->actingAs(adminAutenticado())
+        ->delete("/admin/canchas/{$cancha->id}/eliminar")
+        ->assertRedirect()
+        ->assertSessionHas('error');
+
+    $this->assertDatabaseHas('canchas', [
+        'id' => $cancha->id,
+        'oculta_en' => null,
+        'imagen_url' => 'canchas/vieja.png',
+    ]);
+
+    Storage::disk('public')->assertExists('canchas/vieja.png');
 });
 
 test('hidden canchas are not listed in the admin panel', function () {

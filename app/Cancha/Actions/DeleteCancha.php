@@ -4,6 +4,8 @@ namespace App\Cancha\Actions;
 
 use App\Cancha\Models\Cancha;
 use App\Cancha\Support\CanchaImagen;
+use App\Reserva\Enums\EstadoReserva;
+use Illuminate\Validation\ValidationException;
 
 class DeleteCancha
 {
@@ -12,9 +14,17 @@ class DeleteCancha
      * la oculta del panel conservando el historial y borra su imagen.
      *
      * @return bool Indica si la cancha fue ocultada en lugar de eliminada.
+     *
+     * @throws ValidationException Si la cancha tiene reservas por efectuar.
      */
     public function __invoke(Cancha $cancha): bool
     {
+        if ($this->tieneReservasPorEfectuar($cancha)) {
+            throw ValidationException::withMessages([
+                'cancha' => 'Esta cancha tiene reservas por efectuar. Cancelalas o reprogramalas antes de eliminarla.',
+            ]);
+        }
+
         $rutaImagen = $cancha->getRawOriginal('imagen_url');
 
         if ($cancha->reservas()->exists()) {
@@ -35,5 +45,19 @@ class DeleteCancha
         CanchaImagen::deleteIfCustom($rutaImagen);
 
         return false;
+    }
+
+    /**
+     * Indica si la cancha tiene reservas pendientes o confirmadas de hoy en adelante.
+     */
+    private function tieneReservasPorEfectuar(Cancha $cancha): bool
+    {
+        return $cancha->reservas()
+            ->whereIn('estado', [
+                EstadoReserva::Pendiente->value,
+                EstadoReserva::Confirmada->value,
+            ])
+            ->where('fecha_turno', '>=', now()->toDateString())
+            ->exists();
     }
 }

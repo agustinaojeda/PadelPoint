@@ -13,6 +13,7 @@ use App\Cancha\Requests\StoreCanchaRequest;
 use App\Cancha\Requests\UpdateCanchaRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -81,7 +82,11 @@ class CanchaController extends Controller
      */
     public function eliminar(Cancha $cancha): RedirectResponse
     {
-        $ocultada = ($this->deleteCancha)($cancha);
+        try {
+            ($this->deleteCancha)($cancha);
+        } catch (ValidationException $exception) {
+            return back()->with('error', $exception->validator->errors()->first('cancha'));
+        }
 
         return back()->with('success', 'Cancha eliminada definitivamente.');
     }
