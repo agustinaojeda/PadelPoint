@@ -27,10 +27,10 @@ const getSpanClass = (index: number) => {
     <section id="experiencia" class="w-full scroll-mt-20">
         <div class="mx-auto max-w-6xl px-6">
             <div class="mb-12 text-center">
-                <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white md:text-4xl">
+                <h2 class="text-3xl font-extrabold text-slate-900 md:text-4xl">
                     La experiencia <span class="relative inline-block underline decoration-lime-400 decoration-4 underline-offset-8">completa</span>
                 </h2>
-                <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 md:text-base">
+                <p class="mt-4 text-sm text-slate-500 md:text-base">
                     Creamos un espacio donde la pasión por el deporte y la vida social se cruzan. Descubrí nuestro ecosistema de canchas techadas de
                     cristal panorámico, áreas de descanso, servicios gastronómicos y estacionamiento privado para que solo te preocupes por jugar.
                 </p>
@@ -42,7 +42,7 @@ const getSpanClass = (index: number) => {
                     :key="index"
                     :class="[
                         getSpanClass(index),
-                        'relative overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-200 shadow-sm dark:border-slate-800 dark:bg-slate-900',
+                        'relative overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-200 shadow-sm ',
                     ]"
                 >
                     <img :src="foto" :alt="`Experiencia PadelPoint ${index + 1}`" class="h-full w-full object-cover" loading="lazy" />

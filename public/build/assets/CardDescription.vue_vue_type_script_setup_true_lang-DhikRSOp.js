@@ -1,0 +1,1 @@
+import{c as r}from"./utils-CytzSlOG.js";import{d as t,b as a,e as n,n as c,u as p,p as l}from"./app-Cf3NO22u.js";const f=t({__name:"CardDescription",props:{class:{}},setup(s){const e=s;return(o,m)=>(n(),a("p",{class:c(p(r)("text-sm text-muted-foreground",e.class))},[l(o.$slots,"default")],2))}});export{f as _};

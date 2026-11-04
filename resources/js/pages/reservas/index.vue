@@ -49,7 +49,7 @@ const confirmarReserva = (reserva: ReservaConfirmada) => {
 </script>
 
 <template>
-    <Head title="Reservar turno" />
+    <Head title="Reservar turno | PadelPoint" />
 
     <PublicLayout>
         <section class="relative overflow-hidden bg-teal-950 pb-16 pt-28 text-white md:pt-32">

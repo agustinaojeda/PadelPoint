@@ -25,26 +25,26 @@ defineProps<{
 
             <CardHeader class="px-6 pb-2 pt-2">
                 <div class="flex items-start justify-between gap-2">
-                    <CardTitle class="text-xl font-bold text-slate-900 dark:text-white">
+                    <CardTitle class="text-xl font-bold text-slate-900">
                         {{ cancha.nombre }}
                     </CardTitle>
-                    <span class="text-lg font-extrabold text-lime-600 dark:text-lime-400">
+                    <span class="text-lg font-extrabold text-lime-600 ">
                         {{ formatPrecio(cancha.precio) }}
                     </span>
                 </div>
-                <p v-if="cancha.descripcion?.trim()" class="line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
+                <p v-if="cancha.descripcion?.trim()" class="line-clamp-2 text-sm text-slate-500">
                     {{ cancha.descripcion }}
                 </p>
-                <p v-else class="text-sm text-slate-400 dark:text-slate-500">Cancha reglamentaria equipada para competencia y entrenamiento.</p>
+                <p v-else class="text-sm text-slate-400 ">Cancha reglamentaria equipada para competencia y entrenamiento.</p>
             </CardHeader>
 
-            <CardContent class="space-y-2.5 px-6 pb-4 text-xs text-slate-600 dark:text-slate-300">
+            <CardContent class="space-y-2.5 px-6 pb-4 text-xs text-slate-600 ">
                 <div class="flex items-center gap-2">
-                    <Clock class="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" />
+                    <Clock class="h-3.5 w-3.5 text-lime-600" />
                     <span><strong>Turnos de </strong>{{ formatDuracion(cancha.duracion_turno) }}</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <Calendar class="h-3.5 w-3.5 text-lime-600 dark:text-lime-400" />
+                    <Calendar class="h-3.5 w-3.5 text-lime-600 " />
                     <span
                         ><strong>Horario: </strong>{{ formatearDias(cancha.dias_disponibles) }} de {{ formatHora(cancha.hora_apertura) }} a
                         {{ formatHora(cancha.hora_cierre) }} hs</span
@@ -56,7 +56,7 @@ defineProps<{
         <div class="px-6 pb-6 pt-2">
             <Link
                 :href="route('reservas.index', { cancha_id: cancha.id })"
-                class="inline-flex items-center gap-2 text-sm font-bold text-lime-600 transition-colors hover:text-lime-700 dark:text-lime-400 dark:hover:text-lime-300"
+                class="inline-flex items-center gap-2 text-sm font-bold text-lime-600 transition-colors hover:text-lime-700"
             >
                 <span>Ver disponibilidad</span>
                 <ArrowRight class="h-4 w-4" />

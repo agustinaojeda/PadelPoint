@@ -14,7 +14,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="PadelPoint" />
+    <Head title="PadelPoint | Reservá tu cancha de pádel online" />
 
     <PublicLayout>
         <HeroHeader />
