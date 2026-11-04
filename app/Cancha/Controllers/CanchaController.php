@@ -83,11 +83,6 @@ class CanchaController extends Controller
     {
         $ocultada = ($this->deleteCancha)($cancha);
 
-        return back()->with(
-            'success',
-            $ocultada
-                ? 'La cancha tiene reservas registradas: se ocultó del panel y se eliminó su imagen conservando el historial.'
-                : 'Cancha eliminada definitivamente.',
-        );
+        return back()->with('success', 'Cancha eliminada definitivamente.');
     }
 }
