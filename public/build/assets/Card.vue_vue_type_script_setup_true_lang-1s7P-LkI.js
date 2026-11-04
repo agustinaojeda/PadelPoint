@@ -1,1 +1,0 @@
-import{c as a}from"./utils-CytzSlOG.js";import{d as o,b as n,e as t,n as c,u as d,p as l}from"./app-BeUVLEZw.js";const f=o({__name:"Card",props:{class:{}},setup(s){const e=s;return(r,p)=>(t(),n("div",{class:c(d(a)("rounded-lg border bg-card text-card-foreground shadow-sm",e.class))},[l(r.$slots,"default")],2))}});export{f as _};

@@ -171,14 +171,17 @@ export function validarReservaPublica(datos: DatosReservaPublica): ErrorValidaci
 
     const nombre = datos.nombre_cliente.trim();
 
+    const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+
     if (!nombre) {
-        errores.push({ campo: 'nombre_cliente', mensaje: 'Ingresá el nombre del cliente.' });
+        errores.push({ campo: 'nombre_cliente', mensaje: 'Ingresá tu nombre.' });
     } else if (nombre.length < 3) {
         errores.push({ campo: 'nombre_cliente', mensaje: 'Ingresá tu nombre completo.' });
     } else if (nombre.length > 255) {
         errores.push({ campo: 'nombre_cliente', mensaje: 'El nombre no puede superar los 255 caracteres.' });
+    } else if (!soloLetrasRegex.test(nombre)) {
+        errores.push({ campo: 'nombre_cliente', mensaje: 'El nombre solo puede contener letras y espacios.  ' });
     }
-
     const email = datos.email_cliente.trim();
 
     if (!email) {
@@ -190,11 +193,16 @@ export function validarReservaPublica(datos: DatosReservaPublica): ErrorValidaci
     }
 
     const telefono = datos.telefono_cliente.trim();
+    const soloNumerosRegex = /^\d+$/;
 
-    if (telefono && telefono.length < 6) {
-        errores.push({ campo: 'telefono_cliente', mensaje: 'Ingresá un teléfono de contacto válido.' });
-    } else if (telefono.length > 50) {
-        errores.push({ campo: 'telefono_cliente', mensaje: 'El teléfono no puede superar los 50 caracteres.' });
+    if (telefono) {
+       if (!soloNumerosRegex.test(telefono)) {
+           errores.push({ campo: 'telefono_cliente', mensaje: 'El teléfono solo debe contener números.' });
+       } else if (telefono.length < 6) {
+           errores.push({ campo: 'telefono_cliente', mensaje: 'Ingresá un teléfono de contacto válido  (mínimo 6 dígitos).' });
+       } else if (telefono.length > 50) {
+            errores.push({ campo: 'telefono_cliente', mensaje: 'El teléfono no puede superar los 50     caracteres.' });
+        }
     }
 
     if (datos.observaciones.length > 500) {
@@ -237,10 +245,16 @@ export function validarReservaAdmin(datos: DatosReservaAdmin): ErrorValidacion<C
 
     const nombre = datos.nombre_cliente.trim();
 
+    const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+
     if (!nombre) {
-        errores.push({ campo: 'nombre_cliente', mensaje: 'Ingresá el nombre del cliente.' });
+        errores.push({ campo: 'nombre_cliente', mensaje: 'Ingresá tu nombre.' });
+    } else if (nombre.length < 3) {
+        errores.push({ campo: 'nombre_cliente', mensaje: 'Ingresá tu nombre completo.' });
     } else if (nombre.length > 255) {
         errores.push({ campo: 'nombre_cliente', mensaje: 'El nombre no puede superar los 255 caracteres.' });
+    } else if (!soloLetrasRegex.test(nombre)) {
+        errores.push({ campo: 'nombre_cliente', mensaje: 'El nombre solo puede contener letras y espacios.  ' });
     }
 
     const email = datos.email_cliente.trim();
@@ -251,8 +265,17 @@ export function validarReservaAdmin(datos: DatosReservaAdmin): ErrorValidacion<C
         errores.push({ campo: 'email_cliente', mensaje: 'El correo no puede superar los 255 caracteres.' });
     }
 
-    if (datos.telefono_cliente.trim().length > 50) {
-        errores.push({ campo: 'telefono_cliente', mensaje: 'El teléfono no puede superar los 50 caracteres.' });
+    const telefono = datos.telefono_cliente.trim();
+    const soloNumerosRegex = /^\d+$/;
+
+    if (telefono) {
+       if (!soloNumerosRegex.test(telefono)) {
+           errores.push({ campo: 'telefono_cliente', mensaje: 'El teléfono solo debe contener números.' });
+       } else if (telefono.length < 6) {
+           errores.push({ campo: 'telefono_cliente', mensaje: 'Ingresá un teléfono de contacto válido  (mínimo 6 dígitos).' });
+       } else if (telefono.length > 50) {
+            errores.push({ campo: 'telefono_cliente', mensaje: 'El teléfono no puede superar los 50     caracteres.' });
+        }
     }
 
     const monto = aNumero(datos.monto_total);
@@ -261,6 +284,8 @@ export function validarReservaAdmin(datos: DatosReservaAdmin): ErrorValidacion<C
         errores.push({ campo: 'monto_total', mensaje: 'El monto total es obligatorio.' });
     } else if (monto < 0) {
         errores.push({ campo: 'monto_total', mensaje: 'El monto total no puede ser negativo.' });
+    } else if(!soloNumerosRegex.test(monto.toString())) {
+        errores.push({ campo: 'monto_total', mensaje: 'El monto total debe ser un número válido.' });
     }
 
     return errores;
@@ -289,11 +314,14 @@ export function validarCancha(datos: DatosCancha): ErrorValidacion<CampoCancha>[
     const errores: ErrorValidacion<CampoCancha>[] = [];
 
     const nombre = datos.nombre.trim();
+    const soloLetrasRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
 
     if (!nombre) {
         errores.push({ campo: 'nombre', mensaje: 'Ingresa un nombre para la cancha.' });
     } else if (nombre.length > 255) {
         errores.push({ campo: 'nombre', mensaje: 'El nombre no puede superar los 255 caracteres.' });
+    }else if (!soloLetrasRegex.test(nombre)) {
+        errores.push({ campo: 'nombre', mensaje: 'El nombre solo puede contener letras y espacios.' });
     }
 
     if (datos.superficie.trim().length > 100) {

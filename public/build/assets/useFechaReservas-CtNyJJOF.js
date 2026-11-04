@@ -1,1 +1,0 @@
-import{r as o,w as i,W as c}from"./app-BeUVLEZw.js";import{f,s as u}from"./fechas-BA3U1m7l.js";function v(s,t){const a=o(s());i(s,r=>{r&&(a.value=r)});const e=r=>{!r||r===a.value||(a.value=r,c.get(t,{fecha:r},{preserveState:!0,preserveScroll:!0,replace:!0}))};return{fecha:a,cambiarFecha:e,navegarDia:r=>e(u(a.value,r)),irAHoy:()=>e(f())}}export{v as u};
