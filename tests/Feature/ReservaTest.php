@@ -3,6 +3,7 @@
 use App\Cancha\Models\Cancha;
 use App\Models\Admin;
 use App\Reserva\Enums\EstadoReserva;
+use App\Reserva\Mail\NuevaReservaPendiente;
 use App\Reserva\Mail\ReservaConfirmada;
 use App\Reserva\Models\Reserva;
 use Illuminate\Support\Facades\Mail;
@@ -376,4 +377,72 @@ test('el alta de admin con email envía el mail', function () {
         ->assertRedirect();
 
     Mail::assertSent(ReservaConfirmada::class, fn ($mail) => $mail->hasTo('cliente@example.com'));
+});
+
+test('la reserva pública envía el aviso de reserva pendiente al admin', function () {
+    Mail::fake();
+
+    $admin = reservaAdmin();
+    $cancha = canchaPublica();
+
+    $this->post('/reservas', reservaPublicaValida($cancha))
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    Mail::assertSent(NuevaReservaPendiente::class, function (NuevaReservaPendiente $mail) use ($admin) {
+        return $mail->hasTo($admin->correoAdmin)
+            && $mail->hasReplyTo('cliente@example.com');
+    });
+});
+
+test('el alta de admin no envía el aviso de reserva pendiente', function () {
+    Mail::fake();
+
+    $cancha = Cancha::factory()->create();
+
+    $this->actingAs(reservaAdmin())
+        ->post('/admin/reservas', reservaValida($cancha, ['email_cliente' => 'cliente@example.com']))
+        ->assertRedirect();
+
+    Mail::assertNotSent(NuevaReservaPendiente::class);
+});
+
+test('la reserva pública se crea aunque no haya admins para avisar', function () {
+    Mail::fake();
+
+    $cancha = canchaPublica();
+
+    $this->post('/reservas', reservaPublicaValida($cancha))
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    Mail::assertNotSent(NuevaReservaPendiente::class);
+});
+
+test('el aviso de reserva pendiente oculta teléfono y observaciones vacíos', function () {
+    $reserva = Reserva::factory()->create([
+        'telefono_cliente' => null,
+        'observaciones' => null,
+        'estado' => EstadoReserva::Pendiente,
+    ]);
+
+    $html = (new NuevaReservaPendiente($reserva))->render();
+
+    expect($html)->not->toContain('Teléfono')
+        ->and($html)->not->toContain('Observaciones');
+});
+
+test('el aviso de reserva pendiente muestra teléfono y observaciones cuando existen', function () {
+    $reserva = Reserva::factory()->create([
+        'telefono_cliente' => '1122334455',
+        'observaciones' => 'Llamar antes de venir.',
+        'estado' => EstadoReserva::Pendiente,
+    ]);
+
+    $html = (new NuevaReservaPendiente($reserva))->render();
+
+    expect($html)->toContain('Teléfono')
+        ->and($html)->toContain('1122334455')
+        ->and($html)->toContain('Observaciones')
+        ->and($html)->toContain('Llamar antes de venir.');
 });

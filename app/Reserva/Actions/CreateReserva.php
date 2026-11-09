@@ -15,6 +15,7 @@ class CreateReserva
     public function __construct(
         private ExisteSolapamientoReserva $existeSolapamiento,
         private EnviarConfirmacionReserva $enviarConfirmacion,
+        private EnviarAvisoReservaPendiente $enviarAviso,
     ) {}
 
     /**
@@ -62,7 +63,9 @@ class CreateReserva
             ]);
         });
 
-        if ($estado === EstadoReserva::Confirmada) {
+        if ($estado === EstadoReserva::Pendiente) {
+            ($this->enviarAviso)($reserva);
+        } elseif ($estado === EstadoReserva::Confirmada) {
             ($this->enviarConfirmacion)($reserva);
         }
 

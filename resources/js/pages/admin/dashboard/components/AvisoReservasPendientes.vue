@@ -17,7 +17,7 @@ defineProps<{
             <AlertTriangle class="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
             <div>
                 <p class="text-sm font-semibold text-amber-900 dark:text-amber-100">
-                    {{ cantidad === 1 ? 'Tenés 1 reserva pendiente para hoy' : `Tenés ${cantidad} reservas pendientes para hoy` }}
+                    {{ cantidad === 1 ? 'Tenés 1 reserva pendiente' : `Tenés ${cantidad} reservas pendientes` }}
                 </p>
                 <p class="mt-1 text-xs text-amber-800 dark:text-amber-200/80">Revisá la grilla para confirmarlas o gestionarlas.</p>
             </div>

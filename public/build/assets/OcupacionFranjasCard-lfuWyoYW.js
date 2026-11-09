@@ -1,1 +1,0 @@
-import{_ as o}from"./OcupacionFranjasCard.vue_vue_type_script_setup_true_lang-Cnn5sXJq.js";import"./Card.vue_vue_type_script_setup_true_lang-DC4qAI4W.js";import"./utils-CytzSlOG.js";import"./app-BJU9O9gI.js";import"./CardTitle.vue_vue_type_script_setup_true_lang-CbSkTO72.js";import"./sun-DG6irSll.js";import"./createLucideIcon-DjaszXfV.js";export{o as default};

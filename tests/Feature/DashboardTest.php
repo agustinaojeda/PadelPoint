@@ -25,7 +25,7 @@ test('the dashboard exposes every panel prop', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('admin/dashboard/index')
-            ->hasAll(['metrics', 'franjasHorarias', 'ocupacionDias', 'proximasReservas', 'canchasResumen', 'balanceAnual', 'reservasPendientesHoy'])
+            ->hasAll(['metrics', 'franjasHorarias', 'ocupacionDias', 'proximasReservas', 'canchasResumen', 'balanceAnual', 'reservasPendientes'])
             ->where('metrics.total_canchas', 2)
             ->has('franjasHorarias', 3)
             ->has('ocupacionDias', 7)
@@ -67,7 +67,11 @@ test('dashboard limits proximas reservas to six', function () {
         ->assertInertia(fn ($page) => $page->has('proximasReservas', 6));
 });
 
-test('dashboard counts only pending reservas for today', function () {
+test('dashboard counts pending reservas from today onwards', function () {
+    Reserva::factory()->create([
+        'fecha_turno' => now()->subDay()->toDateString(),
+        'estado' => EstadoReserva::Pendiente,
+    ]);
     Reserva::factory()->create([
         'fecha_turno' => now()->toDateString(),
         'estado' => EstadoReserva::Pendiente,
@@ -80,14 +84,14 @@ test('dashboard counts only pending reservas for today', function () {
 
     $this->actingAs(Admin::factory()->create())
         ->get('/admin/dashboard')
-        ->assertInertia(fn ($page) => $page->where('reservasPendientesHoy', 1));
+        ->assertInertia(fn ($page) => $page->where('reservasPendientes', 2));
 });
 
 test('dashboard percentages are zero without reservas', function () {
     $this->actingAs(Admin::factory()->create())
         ->get('/admin/dashboard')
         ->assertInertia(fn ($page) => $page
-            ->where('reservasPendientesHoy', 0)
+            ->where('reservasPendientes', 0)
             ->where('franjasHorarias.0.porcentaje', 0)
             ->where('ocupacionDias.0.porcentaje', 0)
             ->where('balanceAnual.0.total', fn ($valor) => (float) $valor === 0.0));

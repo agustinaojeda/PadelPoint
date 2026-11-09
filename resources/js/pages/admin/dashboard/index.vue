@@ -21,7 +21,7 @@ withDefaults(
         proximasReservas?: Reserva[];
         canchasResumen?: CanchaResumen[];
         balanceAnual?: BalanceAnual[];
-        reservasPendientesHoy?: number;
+        reservasPendientes?: number;
     }>(),
     {
         metrics: () => ({
@@ -36,7 +36,7 @@ withDefaults(
         proximasReservas: () => [],
         canchasResumen: () => [],
         balanceAnual: () => [],
-        reservasPendientesHoy: 0,
+        reservasPendientes: 0,
     },
 );
 
@@ -61,7 +61,7 @@ const breadcrumbs: BreadcrumbItem[] = [{ title: 'Panel de Control', href: route(
                 </Button>
             </div>
 
-            <AvisoReservasPendientes :cantidad="reservasPendientesHoy" />
+            <AvisoReservasPendientes :cantidad="reservasPendientes" />
 
             <MetricasCard :metrics="metrics" />
 

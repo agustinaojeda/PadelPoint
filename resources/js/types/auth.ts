@@ -15,6 +15,7 @@ export interface SharedData extends Record<string, unknown> {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    reservasPendientes: number;
     ziggy: {
         location: string;
         url: string;

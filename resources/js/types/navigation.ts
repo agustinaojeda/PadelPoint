@@ -5,6 +5,7 @@ export interface NavItem {
     href: string;
     icon?: Component;
     isActive?: boolean;
+    badge?: number;
 }
 
 export interface BreadcrumbItem {

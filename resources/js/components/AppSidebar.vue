@@ -3,12 +3,15 @@ import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/vue3';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/vue3';
 import { Calendar as CalendarIcon, LandPlot, LayoutGrid } from 'lucide-vue-next';
+import { computed } from 'vue';
 import AppLogo from './AppLogo.vue';
 
-const mainNavItems: NavItem[] = [
+const page = usePage<SharedData>();
+
+const mainNavItems = computed<NavItem[]>(() => [
     {
         title: 'Panel de Control',
         href: route('admin.dashboard', undefined, false),
@@ -23,8 +26,9 @@ const mainNavItems: NavItem[] = [
         title: 'Reservas',
         href: route('admin.reservas.index', undefined, false),
         icon: CalendarIcon,
+        badge: page.props.reservasPendientes,
     },
-];
+]);
 
 const footerNavItems: NavItem[] = [];
 </script>

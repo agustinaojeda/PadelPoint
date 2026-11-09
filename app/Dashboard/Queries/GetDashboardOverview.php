@@ -13,7 +13,6 @@ class GetDashboardOverview
         private GetProximasReservas $getProximasReservas,
         private GetCanchasResumen $getCanchasResumen,
         private GetBalanceAnual $getBalanceAnual,
-        private GetReservasPendientesHoy $getReservasPendientesHoy,
     ) {}
 
     /**
@@ -36,7 +35,6 @@ class GetDashboardOverview
             'proximasReservas' => ($this->getProximasReservas)($hoy),
             'canchasResumen' => ($this->getCanchasResumen)($inicioMes, $finMes),
             'balanceAnual' => ($this->getBalanceAnual)((int) $ahora->format('Y')),
-            'reservasPendientesHoy' => ($this->getReservasPendientesHoy)($hoy),
         ];
     }
 }
